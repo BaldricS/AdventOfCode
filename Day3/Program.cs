@@ -1,6 +1,4 @@
-﻿using System;
-
-using AOC;
+﻿using AOC;
 
 namespace Day3
 {
@@ -33,7 +31,7 @@ namespace Day3
             CountTreesOnSlope(lines, 7, 1) *
             CountTreesOnSlope(lines, 1, 2);
 
-        static void Main(string[] args)
+        static void Main()
         {
             var puzzle1 = new AdventOfCode(3, 1);
             puzzle1.Run(lines => CountTreesOnSlope(lines, 3, 1));
