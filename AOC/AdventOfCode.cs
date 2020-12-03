@@ -32,10 +32,6 @@ namespace AOC
             Console.WriteLine();
         }
 
-        private string[] GetInput()
-        {
-            var filename = $"{_day}.txt";
-            return File.ReadAllLines($"inputs/{filename}");
-        }
+        private string[] GetInput() => File.ReadAllLines("inputs/in.txt");
     }
 }
