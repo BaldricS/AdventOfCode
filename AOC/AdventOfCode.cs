@@ -16,6 +16,8 @@ namespace AOC
             _puzzle = puzzle;
         }
 
+        public void Run<R>(Func<string[], R> solver) => Run((x) => x, solver);
+
         public void Run<T, R>(Func<string, T> inputMap, Func<T[], R> solver)
         {
             var input = GetInput().Select(inputMap).ToArray();
