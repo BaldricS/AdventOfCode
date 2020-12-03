@@ -6,17 +6,16 @@ namespace Day3
 {
     class Program
     {
-        static int CountTreesOnSlope(string[] lines)
+        static long CountTreesOnSlope(string[] lines, int slopeRow, int slopeColumn)
         {
             int rows = lines.Length;
             int cols = lines[0].Length;
-            int slopeOver = 3;
-            int treesHit = 0;
+            long treesHit = 0;
 
             int currentCol = 0;
-            for (int r = 1; r < rows; ++r)
+            for (int r = slopeRow; r < rows; r += slopeRow)
             {
-                currentCol += slopeOver;
+                currentCol += slopeColumn;
 
                 if (lines[r][currentCol % cols] == '#')
                 {
@@ -27,10 +26,20 @@ namespace Day3
             return treesHit;
         }
 
+        static long CountAllSlopes(string[] lines) =>
+            CountTreesOnSlope(lines, 1, 1) *
+            CountTreesOnSlope(lines, 1, 3) *
+            CountTreesOnSlope(lines, 1, 5) *
+            CountTreesOnSlope(lines, 1, 7) *
+            CountTreesOnSlope(lines, 2, 1);
+
         static void Main(string[] args)
         {
             var puzzle1 = new AdventOfCode(3, 1);
-            puzzle1.Run(CountTreesOnSlope);
+            puzzle1.Run(lines => CountTreesOnSlope(lines, 1, 3));
+
+            var puzzle2 = new AdventOfCode(3, 2);
+            puzzle2.Run(CountAllSlopes);
         }
     }
 }
