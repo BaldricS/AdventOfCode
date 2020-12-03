@@ -6,7 +6,7 @@ namespace Day3
 {
     class Program
     {
-        static long CountTreesOnSlope(string[] lines, int slopeRow, int slopeColumn)
+        static long CountTreesOnSlope(string[] lines, int slopeColumn, int slopeRow)
         {
             int rows = lines.Length;
             int cols = lines[0].Length;
@@ -28,15 +28,15 @@ namespace Day3
 
         static long CountAllSlopes(string[] lines) =>
             CountTreesOnSlope(lines, 1, 1) *
-            CountTreesOnSlope(lines, 1, 3) *
-            CountTreesOnSlope(lines, 1, 5) *
-            CountTreesOnSlope(lines, 1, 7) *
-            CountTreesOnSlope(lines, 2, 1);
+            CountTreesOnSlope(lines, 3, 1) *
+            CountTreesOnSlope(lines, 5, 1) *
+            CountTreesOnSlope(lines, 7, 1) *
+            CountTreesOnSlope(lines, 1, 2);
 
         static void Main(string[] args)
         {
             var puzzle1 = new AdventOfCode(3, 1);
-            puzzle1.Run(lines => CountTreesOnSlope(lines, 1, 3));
+            puzzle1.Run(lines => CountTreesOnSlope(lines, 3, 1));
 
             var puzzle2 = new AdventOfCode(3, 2);
             puzzle2.Run(CountAllSlopes);
