@@ -6,7 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="inputs\day1-1.txt">
+    <ProjectReference Include="..\AOC\AOC.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="inputs\1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

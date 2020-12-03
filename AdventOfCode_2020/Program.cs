@@ -3,21 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using AOC;
+
 namespace AdventOfCode_2020
 {
     class Program
     {
-        static int[] GetInput(string filename)
+        static int SolvePuzzle1(int[] input)
         {
-            var path = Path.GetFullPath(filename);
-            var lines = File.ReadAllLines(path);
-
-            return lines.Select(int.Parse).ToArray();
-        }
-
-        static void Main()
-        {
-            var input = GetInput("inputs/day1-1.txt");
             Array.Sort(input);
 
             for (int s = 0, e = input.Length - 1; s < e;)
@@ -25,8 +18,7 @@ namespace AdventOfCode_2020
                 int sum = input[s] + input[e];
                 if (sum == 2020)
                 {
-                    Console.WriteLine($"Day 1 Puzzle 1 Solution: {input[s] * input[e]}.");
-                    break;
+                    return input[s] * input[e];
                 }
                 else if (sum > 2020)
                 {
@@ -38,13 +30,19 @@ namespace AdventOfCode_2020
                 }
             }
 
+            return -1;
+        }
+
+        static int SolvePuzzle2(int[] input)
+        {
+            Array.Sort(input);
+
             for (int s1 = 0, s2 = 1, e = input.Length - 1; s2 < e;)
             {
                 int sum = input[s1] + input[s2] + input[e];
                 if (sum == 2020)
                 {
-                    Console.WriteLine($"Day 1 Puzzle 2 Solution: {input[s1] * input[s2] * input[e]}.");
-                    break;
+                    return input[s1] * input[s2] * input[e];
                 }
                 else if (sum > 2020)
                 {
@@ -69,6 +67,17 @@ namespace AdventOfCode_2020
                     }
                 }
             }
+
+            return -1;
+        }
+
+        static void Main()
+        {
+            var puzzle1 = new AdventOfCode(1, 1);
+            puzzle1.Run(int.Parse, SolvePuzzle1);
+
+            var puzzle2 = new AdventOfCode(1, 2);
+            puzzle2.Run(int.Parse, SolvePuzzle2);
         }
     }
 }
