@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Day01", "AdventOfCode_2020\Day01.csproj", "{CC4DC852-C8EF-4FBA-B15B-35E4403187C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Day2", "Day2\Day2.csproj", "{15097B6B-6F3A-449F-BF44-0F4CB71E63A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOC", "AOC\AOC.csproj", "{F7A2A977-3436-49A7-8147-ACE7C502E5AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{CC4DC852-C8EF-4FBA-B15B-35E4403187C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC4DC852-C8EF-4FBA-B15B-35E4403187C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC4DC852-C8EF-4FBA-B15B-35E4403187C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15097B6B-6F3A-449F-BF44-0F4CB71E63A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15097B6B-6F3A-449F-BF44-0F4CB71E63A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15097B6B-6F3A-449F-BF44-0F4CB71E63A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15097B6B-6F3A-449F-BF44-0F4CB71E63A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7A2A977-3436-49A7-8147-ACE7C502E5AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A2A977-3436-49A7-8147-ACE7C502E5AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A2A977-3436-49A7-8147-ACE7C502E5AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A2A977-3436-49A7-8147-ACE7C502E5AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
