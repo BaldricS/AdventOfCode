@@ -16,6 +16,16 @@ namespace Day4
             return keys.All(k => passport.Contains(k, StringComparison.OrdinalIgnoreCase));
         }
 
+        public static bool IsValidInt(string maybeInt, int min, int max)
+        {
+            if (!int.TryParse(maybeInt, out int val))
+            {
+                return false;
+            }
+
+            return val >= min && val <= max;
+        }
+
         public static bool IsValidPassportStrict(string passport)
         {
             if (!IsValidPassport(passport))
@@ -24,39 +34,18 @@ namespace Day4
             }
 
             var values = passport.Split(" ").ToDictionary(k => k.Split(":")[0], k => k.Split(":")[1]);
-
-            if (int.TryParse(values["byr"], out int year))
+            
+            if (!IsValidInt(values["byr"], 1920, 2020))
             {
-                if (year < 1920 || year > 2020)
-                {
-                    return false;
-                }
+                return false;
             }
-            else
+            
+            if (!IsValidInt(values["iyr"], 2010, 2020))
             {
                 return false;
             }
 
-            if (int.TryParse(values["iyr"], out year))
-            {
-                if (year < 2010 || year > 2020)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-
-            if (int.TryParse(values["eyr"], out year))
-            {
-                if (year < 2020 || year > 2030)
-                {
-                    return false;
-                }
-            }
-            else
+            if (!IsValidInt(values["eyr"], 2020, 2030))
             {
                 return false;
             }
@@ -65,28 +54,14 @@ namespace Day4
             var matches = heightRegex.Match(values["hgt"]);
             if (matches.Groups[2].Value == "in")
             {
-                if (int.TryParse(matches.Groups[1].Value, out int height))
-                {
-                    if (height < 59 || height > 76)
-                    {
-                        return false;
-                    }
-                }
-                else
+                if (!IsValidInt(matches.Groups[1].Value, 59, 76))
                 {
                     return false;
                 }
             }
             else if (matches.Groups[2].Value == "cm")
             {
-                if (int.TryParse(matches.Groups[1].Value, out int height))
-                {
-                    if (height < 150 || height > 193)
-                    {
-                        return false;
-                    }
-                }
-                else
+                if (!IsValidInt(matches.Groups[1].Value, 150, 193))
                 {
                     return false;
                 }
