@@ -26,6 +26,35 @@ namespace Day4
             return val >= min && val <= max;
         }
 
+        public static bool IsValidBirthYear(string value) => IsValidInt(value, 1920, 2002);
+
+        public static bool IsValidIssueYear(string value) => IsValidInt(value, 2010, 2020);
+
+        public static bool IsValidExpirationYear(string value) => IsValidInt(value, 2020, 2030);
+
+        public static bool IsValidHeight(string value)
+        {
+            var heightRegex = new Regex(@"^(\d+)(cm|in)$");
+            var matches = heightRegex.Match(value);
+            if (matches.Groups[2].Value == "in" && IsValidInt(matches.Groups[1].Value, 59, 76))
+            {
+                return true;
+            }
+            else if (matches.Groups[2].Value == "cm" && IsValidInt(matches.Groups[1].Value, 150, 193))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsValidHairColor(string value) => new Regex(@"^#[0-9a-f]{6}$", RegexOptions.IgnoreCase).IsMatch(value);
+
+        public static bool IsValidEyeColor(string value) =>
+            new[] { "amb", "blu", "brn", "gry", "grn", "hzl", "oth" }.Any(e => value.Equals(e));
+
+        public static bool IsValidPin(string value) => new Regex(@"^\d{9}$").IsMatch(value);
+
         public static bool IsValidPassportStrict(string passport)
         {
             if (!IsValidPassport(passport))
@@ -34,63 +63,14 @@ namespace Day4
             }
 
             var values = passport.Split(" ").ToDictionary(k => k.Split(":")[0], k => k.Split(":")[1]);
-            
-            if (!IsValidInt(values["byr"], 1920, 2020))
-            {
-                return false;
-            }
-            
-            if (!IsValidInt(values["iyr"], 2010, 2020))
-            {
-                return false;
-            }
 
-            if (!IsValidInt(values["eyr"], 2020, 2030))
-            {
-                return false;
-            }
-
-            var heightRegex = new Regex(@"^(\d+)(cm|in)$");
-            var matches = heightRegex.Match(values["hgt"]);
-            if (matches.Groups[2].Value == "in")
-            {
-                if (!IsValidInt(matches.Groups[1].Value, 59, 76))
-                {
-                    return false;
-                }
-            }
-            else if (matches.Groups[2].Value == "cm")
-            {
-                if (!IsValidInt(matches.Groups[1].Value, 150, 193))
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-
-
-            var hclRegex = new Regex(@"^#[0-9a-f]{6}$", RegexOptions.IgnoreCase);
-            if (!hclRegex.IsMatch(values["hcl"]))
-            {
-                return false;
-            }
-
-            var legalEyeColors = new[] { "amb", "blu", "brn", "gry", "grn", "hzl", "oth" };
-            if (!legalEyeColors.Any(e => values["ecl"].Equals(e)))
-            {
-                return false;
-            }
-
-            var idRegex = new Regex(@"^\d{9}$");
-            if (!idRegex.IsMatch(values["pid"]))
-            {
-                return false;
-            }
-
-            return true;
+            return IsValidBirthYear(values["byr"])
+                && IsValidIssueYear(values["iyr"])
+                && IsValidExpirationYear(values["eyr"])
+                && IsValidHeight(values["hgt"])
+                && IsValidHairColor(values["hcl"])
+                && IsValidEyeColor(values["ecl"])
+                && IsValidPin(values["pid"]);
         }
 
         public static int Solve1(string[] lines, Func<string, bool> policy)
