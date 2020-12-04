@@ -62,7 +62,7 @@ namespace Day4
                 return false;
             }
 
-            var values = passport.Split(" ").ToDictionary(k => k.Split(":")[0], k => k.Split(":")[1]);
+            var values = passport.Split(" ").Select(k => k.Split(":")).ToDictionary(k => k[0], k => k[1]);
 
             return IsValidBirthYear(values["byr"])
                 && IsValidIssueYear(values["iyr"])
