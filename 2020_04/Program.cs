@@ -73,7 +73,7 @@ namespace Day4
                 && IsValidPin(values["pid"]);
         }
 
-        public static int Solve1(string[] lines, Func<string, bool> policy)
+        public static int Solve(string[] lines, Func<string, bool> policy)
         {
             var passportPieces = new List<string>();
             int passports = 0;
@@ -101,10 +101,10 @@ namespace Day4
         static void Main()
         {
             var puzzle1 = new AdventOfCode(4, 1);
-            puzzle1.Run(lines => Solve1(lines, IsValidPassport));
+            puzzle1.Run(lines => Solve(lines, IsValidPassport));
 
             var puzzle2 = new AdventOfCode(4, 2);
-            puzzle1.Run(lines => Solve1(lines, IsValidPassportStrict));
+            puzzle1.Run(lines => Solve(lines, IsValidPassportStrict));
         }
     }
 }
