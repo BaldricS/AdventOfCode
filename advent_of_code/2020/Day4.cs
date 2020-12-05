@@ -1,13 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using AOC;
-
-namespace Day4
+namespace AOC
 {
-    class Program
+    [AdventOfCode(2020, 4)]
+    public static class Day4_2020
     {
         public static bool IsValidPassport(string passport)
         {
@@ -98,13 +97,11 @@ namespace Day4
             return passports;
         }
 
-        static void Main()
-        {
-            var puzzle1 = new AdventOfCode(4, 1);
-            puzzle1.Run(lines => Solve(lines, IsValidPassport));
+        [Solver(1)]
+        public static int Solve1(string[] lines) => Solve(lines, IsValidPassport);
 
-            var puzzle2 = new AdventOfCode(4, 2);
-            puzzle1.Run(lines => Solve(lines, IsValidPassportStrict));
-        }
+
+        [Solver(2)]
+        public static int Solve2(string[] lines) => Solve(lines, IsValidPassportStrict);
     }
 }
