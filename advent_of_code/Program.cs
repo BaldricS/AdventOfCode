@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,8 +8,6 @@ namespace AOC
 {
     class Program
     {
-        public static string Identity(string l) => l;
-
         static void Main(string[] args)
         {
             int year = int.Parse(args[0]);
@@ -31,27 +30,42 @@ namespace AOC
 
             var methods = solverType.Type.GetMethods();
             var mapFunc = methods
-                .FirstOrDefault(m => m.GetCustomAttribute<MapInputAttribute>() != null)
-                ?? typeof(Program).GetMethod("Identity");
+                .FirstOrDefault(m => m.GetCustomAttribute<MapInputAttribute>() != null);
 
             var solverFunc = methods
                 .First(m => (m.GetCustomAttribute<SolverAttribute>()?.Puzzle ?? 0) == puzzle);
 
-            var result = GetSolution(year, day, mapFunc, solverFunc);
+            var input = GetInput(year, day, mapFunc);
 
-            Console.WriteLine($"=== {year} {day} {puzzle} ===");
-            Console.WriteLine("Solution:");
-            Console.WriteLine(result);
+            var sw = new Stopwatch();
+            sw.Start();
+            var solution = solverFunc.Invoke(null, new[] { input });
+            sw.Stop();
+
+            Console.WriteLine($"===   {year} {day,2} {puzzle,2}   ===");
+            Console.WriteLine($"{"Solution",-10} | Time (ms)");
+            Console.WriteLine("----------------------");
+            Console.WriteLine($"{solution,-10}   {sw.ElapsedMilliseconds}");
         }
 
-        private static object GetSolution(int year, int day, MethodInfo mapFunc, MethodInfo solverFunc)
+        public static Array GetInput(int year, int day, MethodInfo mapFunc)
         {
             var lines = GetInput(year, day);
-            var mapped = lines
-                .Select(l => mapFunc.Invoke(null, new[] { l }))
-                .ToArray();
+            if (mapFunc == null)
+            {
+                return lines;
+            }
 
-            return solverFunc.Invoke(null, new[] { mapped });
+            var mapped = Array.CreateInstance(mapFunc.ReturnType, lines.Length);
+            var param = new object[] { null };
+
+            for (int i = 0; i < lines.Length; ++i)
+            {
+                param[0] = lines[i];
+                mapped.SetValue(mapFunc.Invoke(null, param), i);
+            }
+
+            return mapped;
         }
 
         private static string[] GetInput(int year, int day) =>
