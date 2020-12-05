@@ -24,7 +24,7 @@ namespace AOC
             Console.WriteLine($"===   {year} {day,2} {puzzle,2}   ===");
             Console.WriteLine($"{"Solution",-10} | Time (ms)");
             Console.WriteLine("----------------------");
-            Console.WriteLine($"{result.Value,-10}   {result.TimeEllapsedMs}");
+            Console.WriteLine($"{result.Value,-10}   {result.SolveTimeEllapsedMs}");
         }
     }
 }

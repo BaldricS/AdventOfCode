@@ -3,6 +3,7 @@
     public struct RunResult
     {
         public object Value;
-        public long TimeEllapsedMs;
+        public long InputTimeEllapsedMs;
+        public long SolveTimeEllapsedMs;
     }
 }

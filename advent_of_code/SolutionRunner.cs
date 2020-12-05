@@ -8,17 +8,23 @@ namespace AOC
     {
         public static RunResult Go(Solution solution)
         {
-            var input = GetInput(solution.Year, solution.Day, solution.MapFunc);
-
             var sw = new Stopwatch();
             sw.Start();
+            var input = GetInput(solution.Year, solution.Day, solution.MapFunc);
+            sw.Stop();
+
+            var inputFetchMs = sw.ElapsedMilliseconds;
+
+            sw.Reset();
+            sw.Stop();
             var result = solution.Solver.Invoke(null, new[] { input });
             sw.Stop();
 
             return new RunResult
             {
                 Value = result,
-                TimeEllapsedMs = sw.ElapsedMilliseconds
+                InputTimeEllapsedMs = inputFetchMs,
+                SolveTimeEllapsedMs = sw.ElapsedMilliseconds
             };
         }
 
