@@ -16,7 +16,7 @@ namespace AOC
             var inputFetchMs = sw.ElapsedMilliseconds;
 
             sw.Reset();
-            sw.Stop();
+            sw.Start();
             var result = solution.Solver.Invoke(null, new[] { input });
             sw.Stop();
 
