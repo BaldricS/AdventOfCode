@@ -1,8 +1,10 @@
-﻿using AOC;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 
-namespace Day3
+namespace AOC
 {
-    class Program
+    [AdventOfCode(2020, 3)]
+    public static class Day3_2020
     {
         static long CountTreesOnSlope(string[] lines, int slopeColumn, int slopeRow)
         {
@@ -24,20 +26,15 @@ namespace Day3
             return treesHit;
         }
 
-        static long CountAllSlopes(string[] lines) =>
+        [Solver(1)]
+        public static long CountSingleSlope(string[] lines) => CountTreesOnSlope(lines, 3, 1);
+
+        [Solver(2)]
+        public static long CountAllSlopes(string[] lines) =>
             CountTreesOnSlope(lines, 1, 1) *
             CountTreesOnSlope(lines, 3, 1) *
             CountTreesOnSlope(lines, 5, 1) *
             CountTreesOnSlope(lines, 7, 1) *
             CountTreesOnSlope(lines, 1, 2);
-
-        static void Main()
-        {
-            var puzzle1 = new AdventOfCode(3, 1);
-            puzzle1.Run(lines => CountTreesOnSlope(lines, 3, 1));
-
-            var puzzle2 = new AdventOfCode(3, 2);
-            puzzle2.Run(CountAllSlopes);
-        }
     }
 }
