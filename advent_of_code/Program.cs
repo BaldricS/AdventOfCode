@@ -21,9 +21,9 @@ namespace AOC
 
             var result = SolutionRunner.Go(solution.Value);
 
-            Console.WriteLine($"  | {"Solution",-10} | {"Solve (ms)",-10} | {"Input (ms)",-10}");
-            Console.WriteLine(new string('-', 40));
-            Console.WriteLine($"  | {result.Value,-10} | {result.SolveTimeEllapsedMs,-10} | {result.InputTimeEllapsedMs,-10}");
+            Console.WriteLine($"  | {"Solution",-10} | {"Solve (ms)",-10} | {"Input (ms)",-10} | {"Total (ms)",-10}");
+            Console.WriteLine(new string('-', 53));
+            Console.WriteLine($"  | {result.Value,-10} | {result.SolveTimeEllapsedMs,-10} | {result.InputTimeEllapsedMs,-10} | {result.TotalTimeEllapsedMs,-10}");
         }
     }
 }
