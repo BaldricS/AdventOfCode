@@ -1,6 +1,6 @@
 # General
 
-These are my solutions to the Advent of Code puzzles for 2020.
+These are my solutions to the Advent of Code puzzles.
 
 I've chosen C# because .NET 5 is the new shiny, and Visual Studio made it
 pretty easy to get rolling with it. I'm not actually sure if I'm going to end
