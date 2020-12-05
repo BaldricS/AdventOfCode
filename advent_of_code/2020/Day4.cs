@@ -15,16 +15,6 @@ namespace AOC
             return keys.All(k => passport.Contains(k, StringComparison.OrdinalIgnoreCase));
         }
 
-        public static bool IsValidInt(string maybeInt, int min, int max)
-        {
-            if (!int.TryParse(maybeInt, out int val))
-            {
-                return false;
-            }
-
-            return val >= min && val <= max;
-        }
-
         public static bool IsValidBirthYear(string value) => value.IsInRange(1920, 2002);
 
         public static bool IsValidIssueYear(string value) => value.IsInRange(2010, 2020);
