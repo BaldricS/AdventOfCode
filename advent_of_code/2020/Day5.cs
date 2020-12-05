@@ -16,30 +16,24 @@ namespace AOC
             var mid = (high - low) / 2;
             if (seat[0] == highC)
             {
-                return FindMidpoint(seat.Substring(1), low + mid + 1, high, highC);
+                return FindMidpoint(seat[1..], low + mid + 1, high, highC);
             }
 
-            return FindMidpoint(seat.Substring(1), low, low + mid, highC);
+            return FindMidpoint(seat[1..], low, low + mid, highC);
         }
 
-        public static int GetSeatNumber(string line)
-        {
-            var rowStr = line.Substring(0, 7);
-            var colStr = line.Substring(7);
-
-            return FindMidpoint(rowStr, 0, 127, 'B') * 8 + FindMidpoint(colStr, 0, 7, 'R');
-        }
+        public static int GetSeatNumber(string line) =>
+            FindMidpoint(line[..7], 0, 127, 'B') * 8 + FindMidpoint(line[7..], 0, 7, 'R');
 
         [Solver(1)]
-        public static int Solve1(string[] input) => input.Select(GetSeatNumber).Max();
+        public static int Solve1(string[] input) => input.Max(GetSeatNumber);
 
         [Solver(2)]
         public static int Solve2(string[] input)
         {
-            var allSeats = input.Select(GetSeatNumber).ToArray();
-            Array.Sort(allSeats);
+            var allSeats = input.ToSortedList(GetSeatNumber);
 
-            for (int i = 1; i < allSeats.Length; ++i)
+            for (int i = 1; i < allSeats.Count; ++i)
             {
                 int prev = allSeats[i - 1];
                 int curr = allSeats[i];
