@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace AOC
 {
@@ -14,52 +10,21 @@ namespace AOC
             int day = int.Parse(args[1]);
             int puzzle = int.Parse(args[2]);
 
-            var solverType = Assembly
-                .GetExecutingAssembly()
-                .GetTypes()
-                .Select(t =>
-                {
-                    return new
-                    {
-                        Type = t,
-                        Attribute = t.GetCustomAttribute<AdventOfCodeAttribute>()
-                    };
-                })
-                .Where(t => t.Attribute != null)
-                .First(t => t.Attribute.Year == year && t.Attribute.Day == day);
+            var solutions = new SolutionFinder();
+            var solution = solutions.Find(year, day, puzzle);
 
-            var methods = solverType.Type.GetMethods();
-            var mapFunc = methods
-                .FirstOrDefault(m => m.GetCustomAttribute<MapInputAttribute>() != null);
+            if (!solution.HasValue)
+            {
+                Console.WriteLine("Solution not found.");
+                return;
+            }
 
-            var solverFunc = methods
-                .First(m => (m.GetCustomAttribute<SolverAttribute>()?.Puzzle ?? 0) == puzzle);
-
-            var input = GetInput(year, day, mapFunc);
-
-            var sw = new Stopwatch();
-            sw.Start();
-            var solution = solverFunc.Invoke(null, new[] { input });
-            sw.Stop();
+            var result = SolutionRunner.Go(solution.Value);
 
             Console.WriteLine($"===   {year} {day,2} {puzzle,2}   ===");
             Console.WriteLine($"{"Solution",-10} | Time (ms)");
             Console.WriteLine("----------------------");
-            Console.WriteLine($"{solution,-10}   {sw.ElapsedMilliseconds}");
+            Console.WriteLine($"{result.Value,-10}   {result.TimeEllapsedMs}");
         }
-
-        public static object GetInput(int year, int day, MethodInfo mapFunc)
-        {
-            var lines = GetInput(year, day);
-            if (mapFunc == null)
-            {
-                return lines;
-            }
-
-            return mapFunc.Invoke(null, new[] { lines });
-        }
-
-        private static string[] GetInput(int year, int day) =>
-            File.ReadAllLines(Path.Join("inputs", $"{year}", $"{day}"));
     }
 }

@@ -5,16 +5,9 @@ using System.Reflection;
 
 namespace AOC
 {
-    public struct Solution
-    {
-        public MethodInfo MapFunc;
-        public MethodInfo Solver;
-    }
-
     public class SolutionFinder
     {
-
-        private readonly Dictionary<int, List<Solution[]>> _solutions;
+        private readonly List<Solution> _solutions;
 
         public SolutionFinder()
         {
@@ -27,43 +20,15 @@ namespace AOC
                     Attribute = t.GetCustomAttribute<AdventOfCodeAttribute>()
                 })
                 .Where(t => t.Attribute != null)
-                .OrderBy(t => t.Attribute.Year)
-                .ToLookup(t => t.Attribute.Year, t => t)
-                .ToDictionary(
-                    t => t.Key,
-                    t => t
-                        .OrderBy(t => t.Attribute.Day)
-                        .Select(t => TypeToSolutions(t.Type))
-                        .ToList()
-                );
+                .SelectMany(t => TypeToSolutions(t.Type, t.Attribute))
+                .ToList();
         }
 
-        public Solution? FindSolution(int year, int day, int puzzle)
-        {
-            if (!_solutions.ContainsKey(year))
-            {
-                return null;
-            }
+        public Solution? Find(int year, int day, int puzzle) =>
+            _solutions
+                .FirstOrDefault(sol => sol.Year == year && sol.Day == day && sol.Puzzle == puzzle);
 
-            --day;
-            --puzzle;
-
-            var solutionsInYear = _solutions[year];
-            if (solutionsInYear.Count >= day)
-            {
-                return null;
-            }
-
-            var solutionsForDay = solutionsInYear[day];
-            if (solutionsForDay.Length >= puzzle)
-            {
-                return null;
-            }
-
-            return solutionsForDay[puzzle];
-        }
-
-        private static Solution[] TypeToSolutions(Type t)
+        private static Solution[] TypeToSolutions(Type t, AdventOfCodeAttribute aoc)
         {
             var methods = t.GetMethods();
 
@@ -81,7 +46,10 @@ namespace AOC
                 .Select(t => new Solution
                 {
                     MapFunc = mapFunc,
-                    Solver = t.Method
+                    Solver = t.Method,
+                    Year = aoc.Year,
+                    Day = aoc.Day,
+                    Puzzle = t.Attribute.Puzzle,
                 })
                 .ToArray();
         }
