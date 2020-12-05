@@ -18,20 +18,12 @@ namespace AOC
         [Solver(2)]
         public static int Solve2(IEnumerable<string> input)
         {
-            var allSeats = input.ToSortedList(GetSeatNumber);
+            var allSets = input.ToSortedList(GetSeatNumber);
 
-            for (int i = 1; i < allSeats.Count; ++i)
-            {
-                int prev = allSeats[i - 1];
-                int curr = allSeats[i];
-
-                if ((curr - prev) == 2)
-                {
-                    return curr - 1;
-                }
-            }
-
-            return -1;
+            return allSets
+                .Zip(allSets.Skip(1), (first, second) => new { first, second })
+                .First(pair => pair.second - pair.first == 2)
+                .first + 1;
         }
     }
 }
