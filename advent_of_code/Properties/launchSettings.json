@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "advent_of_code": {
+      "commandName": "Project",
+      "commandLineArgs": "2020 4 1",
+      "workingDirectory": "$(SolutionDir)"
+    }
+  }
+}

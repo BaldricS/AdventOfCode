@@ -15,6 +15,12 @@ The dotnet cli can be used to run. From the root:
 dotnet run -p ./advent_of_code [year] [day] [puzzle]
 ```
 
+From Visual Studio:
+
+1. Right click the advent_of_code project and select Properties.
+2. Navigate to Debug.
+3. Update command line arguments to desired puzzle.
+
 # Goals
 
 * Solve the problems.
