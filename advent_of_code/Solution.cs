@@ -2,12 +2,11 @@
 
 namespace AOC
 {
-    public struct Solution
-    {
-        public MethodInfo MapFunc;
-        public MethodInfo Solver;
-        public int Year;
-        public int Day;
-        public int Puzzle;
-    }
+    public record Solution(
+        MethodInfo MapFunc,
+        MethodInfo Solver,
+        int Year,
+        int Day,
+        int Puzzle
+    );
 }

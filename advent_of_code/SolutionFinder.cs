@@ -24,7 +24,7 @@ namespace AOC
                 .ToList();
         }
 
-        public Solution? Find(int year, int day, int puzzle) =>
+        public Solution Find(int year, int day, int puzzle) =>
             _solutions
                 .FirstOrDefault(sol => sol.Year == year && sol.Day == day && sol.Puzzle == puzzle);
 
@@ -43,14 +43,13 @@ namespace AOC
                 })
                 .Where(m => m.Attribute != null)
                 .OrderBy(m => m.Attribute.Puzzle)
-                .Select(t => new Solution
-                {
-                    MapFunc = mapFunc,
-                    Solver = t.Method,
-                    Year = aoc.Year,
-                    Day = aoc.Day,
-                    Puzzle = t.Attribute.Puzzle,
-                })
+                .Select(t => new Solution(
+                    mapFunc,
+                    t.Method,
+                    aoc.Year,
+                    aoc.Day,
+                    t.Attribute.Puzzle
+                ))
                 .ToArray();
         }
     }

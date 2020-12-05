@@ -13,17 +13,17 @@ namespace AOC
             var solutions = new SolutionFinder();
             var solution = solutions.Find(year, day, puzzle);
 
-            if (!solution.HasValue)
+            if (solution == null)
             {
                 Console.WriteLine("Solution not found.");
                 return;
             }
 
-            var result = SolutionRunner.Go(solution.Value);
+            var result = SolutionRunner.Go(solution);
 
             Console.WriteLine($"  | {"Solution",-10} | {"Solve (ms)",-10} | {"Input (ms)",-10} | {"Total (ms)",-10}");
             Console.WriteLine(new string('-', 53));
-            Console.WriteLine($"  | {result.Value,-10} | {result.SolveTimeEllapsedMs,-10} | {result.InputTimeEllapsedMs,-10} | {result.TotalTimeEllapsedMs,-10}");
+            Console.WriteLine($"  | {result.Value,-10} | {result.SolveTimeMs,-10} | {result.InputTimeMs,-10} | {result.TotalTimeMs,-10}");
         }
     }
 }

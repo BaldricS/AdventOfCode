@@ -20,12 +20,11 @@ namespace AOC
             var result = solution.Solver.Invoke(null, new[] { input });
             sw.Stop();
 
-            return new RunResult
-            {
-                Value = result,
-                InputTimeEllapsedMs = inputFetchMs,
-                SolveTimeEllapsedMs = sw.ElapsedMilliseconds
-            };
+            return new RunResult(
+                result,
+                inputFetchMs,
+                sw.ElapsedMilliseconds
+            );
         }
 
         private static object GetInput(int year, int day, MethodInfo mapFunc)

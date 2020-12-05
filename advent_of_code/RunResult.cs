@@ -1,10 +1,7 @@
 ﻿namespace AOC
 {
-    public struct RunResult
+    public record RunResult(object Value, long InputTimeMs, long SolveTimeMs)
     {
-        public object Value;
-        public long InputTimeEllapsedMs;
-        public long SolveTimeEllapsedMs;
-        public long TotalTimeEllapsedMs { get => InputTimeEllapsedMs + SolveTimeEllapsedMs; }
-    }
+        public long TotalTimeMs { get => InputTimeMs + SolveTimeMs; }
+    };
 }
