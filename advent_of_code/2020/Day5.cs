@@ -6,24 +6,20 @@ namespace AOC
     [AdventOfCode(2020, 5)]
     public static class Day5_2020
     {
-        public static int SeatToRow(string seat, int low, int high, char lowC, char highC)
+        public static int FindMidpoint(string seat, int low, int high, char highC)
         {
-            if (seat.Length == 1 && seat[0] == highC)
+            if (seat.Length == 1)
             {
-                return high;
-            }
-            else if (seat.Length == 1 && seat[0] == lowC)
-            {
-                return low;
+                return seat[0] == highC ? high : low;
             }
 
             var mid = (high - low) / 2;
-            if (seat[0] == lowC)
+            if (seat[0] == highC)
             {
-                return SeatToRow(seat.Substring(1), low, low + mid, lowC, highC);
+                return FindMidpoint(seat.Substring(1), low + mid + 1, high, highC);
             }
 
-            return SeatToRow(seat.Substring(1), low + mid + 1, high, lowC, highC);
+            return FindMidpoint(seat.Substring(1), low, low + mid, highC);
         }
 
         public static int GetSeatNumber(string line)
@@ -31,12 +27,11 @@ namespace AOC
             var rowStr = line.Substring(0, 7);
             var colStr = line.Substring(7);
 
-            return SeatToRow(rowStr, 0, 127, 'F', 'B') * 8 + SeatToRow(colStr, 0, 7, 'L', 'R');
+            return FindMidpoint(rowStr, 0, 127, 'B') * 8 + FindMidpoint(colStr, 0, 7, 'R');
         }
 
         [Solver(1)]
-        public static int Solve1(string[] input) =>
-            input.Select(GetSeatNumber).Max();
+        public static int Solve1(string[] input) => input.Select(GetSeatNumber).Max();
 
         [Solver(2)]
         public static int Solve2(string[] input)
