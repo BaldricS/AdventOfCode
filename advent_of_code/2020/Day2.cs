@@ -15,12 +15,10 @@ namespace AOC
     [AdventOfCode(2020, 2)]
     public static class Day2_2020
     {
-        static bool IsValidPasswordPolicy1(Password password)
-        {
-            var desiredLetters = password.password.Count(c => c == password.letter);
-
-            return desiredLetters >= password.low && desiredLetters <= password.high;
-        }
+        static bool IsValidPasswordPolicy1(Password password) =>
+            password.password
+                .Count(c => c == password.letter)
+                .IsInRange(password.low, password.high);
 
         static bool IsValidPasswordPolicy2(Password password)
         {
