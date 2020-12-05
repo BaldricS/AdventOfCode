@@ -1,10 +1,15 @@
-﻿namespace AOC
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace AOC
 {
     [AdventOfCode(2020, 3)]
     public static class Day3_2020
     {
-        static long CountTreesOnSlope(string[] lines, int slopeColumn, int slopeRow)
+        static long CountTreesOnSlope(IEnumerable<string> mountain, int slopeColumn, int slopeRow)
         {
+            var lines = mountain.ToArray();
+
             int rows = lines.Length;
             int cols = lines[0].Length;
             long treesHit = 0;
@@ -24,10 +29,10 @@
         }
 
         [Solver(1)]
-        public static long CountSingleSlope(string[] lines) => CountTreesOnSlope(lines, 3, 1);
+        public static long CountSingleSlope(IEnumerable<string> lines) => CountTreesOnSlope(lines, 3, 1);
 
         [Solver(2)]
-        public static long CountAllSlopes(string[] lines) =>
+        public static long CountAllSlopes(IEnumerable<string> lines) =>
             CountTreesOnSlope(lines, 1, 1) *
             CountTreesOnSlope(lines, 3, 1) *
             CountTreesOnSlope(lines, 5, 1) *

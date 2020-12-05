@@ -27,10 +27,10 @@ namespace AOC
             UnpackInteger(line[..7], 0, 127, 'B') * 8 + UnpackInteger(line[7..], 0, 7, 'R');
 
         [Solver(1)]
-        public static int Solve1(string[] input) => input.Max(GetSeatNumber);
+        public static int Solve1(IEnumerable<string> input) => input.Max(GetSeatNumber);
 
         [Solver(2)]
-        public static int Solve2(string[] input)
+        public static int Solve2(IEnumerable<string> input)
         {
             var allSeats = input.ToSortedList(GetSeatNumber);
 

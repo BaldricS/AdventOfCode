@@ -62,33 +62,28 @@ namespace AOC
                 && IsValidPin(values["pid"]);
         }
 
-        public static int Solve(string[] lines, Func<string, bool> policy)
-        {
-            var passports = lines.Aggregate(new List<List<string>> { new List<string>() }, (acc, line) =>
-            {
-                if (line.Length == 0)
+        [MapInput]
+        public static IEnumerable<string> Map(string[] lines) =>
+            lines
+                .Aggregate(new List<List<string>> { new List<string>() }, (acc, line) =>
                 {
-                    acc.Add(new List<string>());
-                }
-                else
-                {
-                    acc.Last().Add(line);
-                }
+                    if (line.Length == 0)
+                    {
+                        acc.Add(new List<string>());
+                    }
+                    else
+                    {
+                        acc.Last().Add(line);
+                    }
 
-                return acc;
-            });
-
-            return passports
-                .Select(line => string.Join(" ", line))
-                .Where(policy)
-                .Count();
-        }
+                    return acc;
+                })
+                .Select(line => string.Join(" ", line));
 
         [Solver(1)]
-        public static int Solve1(string[] lines) => Solve(lines, IsValidPassport);
-
+        public static int Solve1(IEnumerable<string> passports) => passports.Count(IsValidPassport);
 
         [Solver(2)]
-        public static int Solve2(string[] lines) => Solve(lines, IsValidPassportStrict);
+        public static int Solve2(IEnumerable<string> passports) => passports.Count(IsValidPassportStrict);
     }
 }

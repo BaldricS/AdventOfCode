@@ -48,7 +48,7 @@ namespace AOC
             Console.WriteLine($"{solution,-10}   {sw.ElapsedMilliseconds}");
         }
 
-        public static Array GetInput(int year, int day, MethodInfo mapFunc)
+        public static object GetInput(int year, int day, MethodInfo mapFunc)
         {
             var lines = GetInput(year, day);
             if (mapFunc == null)
@@ -56,16 +56,7 @@ namespace AOC
                 return lines;
             }
 
-            var mapped = Array.CreateInstance(mapFunc.ReturnType, lines.Length);
-            var param = new object[] { null };
-
-            for (int i = 0; i < lines.Length; ++i)
-            {
-                param[0] = lines[i];
-                mapped.SetValue(mapFunc.Invoke(null, param), i);
-            }
-
-            return mapped;
+            return mapFunc.Invoke(null, new[] { lines });
         }
 
         private static string[] GetInput(int year, int day) =>

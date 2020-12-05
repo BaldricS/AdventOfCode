@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AOC
 {
@@ -6,14 +8,14 @@ namespace AOC
     public static class Day1_2020
     {
         [MapInput]
-        public static int MapLine(string line) => int.Parse(line);
+        public static IEnumerable<int> Map(string[] lines) => lines.Select(int.Parse);
 
         [Solver(1)]
-        public static int Solve1(int[] input)
+        public static int Solve1(IEnumerable<int> nums)
         {
-            Array.Sort(input);
+            var input = nums.ToSortedList();
 
-            for (int s = 0, e = input.Length - 1; s < e;)
+            for (int s = 0, e = input.Count - 1; s < e;)
             {
                 int sum = input[s] + input[e];
                 if (sum == 2020)
@@ -34,11 +36,11 @@ namespace AOC
         }
 
         [Solver(2)]
-        public static int Solve2(int[] input)
+        public static int Solve2(IEnumerable<int> nums)
         {
-            Array.Sort(input);
+            var input = nums.ToSortedList();
 
-            for (int s1 = 0, s2 = 1, e = input.Length - 1; s2 < e;)
+            for (int s1 = 0, s2 = 1, e = input.Count - 1; s2 < e;)
             {
                 int sum = input[s1] + input[s2] + input[e];
                 if (sum == 2020)

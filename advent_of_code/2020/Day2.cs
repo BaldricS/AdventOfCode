@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace AOC
@@ -16,7 +17,7 @@ namespace AOC
     {
         static bool IsValidPasswordPolicy1(Password password)
         {
-            var desiredLetters = password.password.Where(c => c == password.letter).Count();
+            var desiredLetters = password.password.Count(c => c == password.letter);
 
             return desiredLetters >= password.low && desiredLetters <= password.high;
         }
@@ -38,26 +39,30 @@ namespace AOC
         }
 
         [MapInput]
-        public static Password Parse(string line)
+        public static IEnumerable<Password> Map(string[] lines)
         {
             var regex = new Regex(@"(\d+)-(\d+) ([a-z]): (.*)$", RegexOptions.IgnoreCase);
-            var match = regex.Match(line);
 
-            return new Password
+            Password MapLine(string line)
             {
-                low = int.Parse(match.Groups[1].Value),
-                high = int.Parse(match.Groups[2].Value),
-                letter = match.Groups[3].Value[0],
-                password = match.Groups[4].Value
-            };
+                var match = regex.Match(line);
+
+                return new Password
+                {
+                    low = int.Parse(match.Groups[1].Value),
+                    high = int.Parse(match.Groups[2].Value),
+                    letter = match.Groups[3].Value[0],
+                    password = match.Groups[4].Value
+                };
+            }
+
+            return lines.Select(MapLine);
         }
 
         [Solver(1)]
-        public static int Solve1(Password[] passwords) =>
-            passwords.Where(IsValidPasswordPolicy1).Count();
+        public static int Solve1(IEnumerable<Password> passwords) => passwords.Count(IsValidPasswordPolicy1);
 
         [Solver(2)]
-        public static int Solve2(Password[] passwords) =>
-            passwords.Where(IsValidPasswordPolicy2).Count();
+        public static int Solve2(IEnumerable<Password> passwords) => passwords.Count(IsValidPasswordPolicy2);
     }
 }
