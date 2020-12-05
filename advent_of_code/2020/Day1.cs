@@ -1,12 +1,15 @@
-﻿using System;
+using System;
 
-using AOC;
-
-namespace AdventOfCode_2020
+namespace AOC
 {
-    class Program
+    [AdventOfCode(2020, 1)]
+    public static class Day1_2020
     {
-        static int SolvePuzzle1(int[] input)
+        [MapInput]
+        public static int MapLine(string line) => int.Parse(line);
+
+        [Solver(1)]
+        public static int Solve1(int[] input)
         {
             Array.Sort(input);
 
@@ -30,7 +33,8 @@ namespace AdventOfCode_2020
             return -1;
         }
 
-        static int SolvePuzzle2(int[] input)
+        [Solver(2)]
+        public static int Solve2(int[] input)
         {
             Array.Sort(input);
 
@@ -66,15 +70,6 @@ namespace AdventOfCode_2020
             }
 
             return -1;
-        }
-
-        static void Main()
-        {
-            var puzzle1 = new AdventOfCode(1, 1);
-            puzzle1.Run(int.Parse, SolvePuzzle1);
-
-            var puzzle2 = new AdventOfCode(1, 2);
-            puzzle2.Run(int.Parse, SolvePuzzle2);
         }
     }
 }
