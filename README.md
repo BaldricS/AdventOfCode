@@ -9,15 +9,11 @@ massive speed-up over previous versions, so solutions go brrr.
 
 Anyways, if you'd like to run this you'll need the .NET 5 SDK installed.
 
-Using Visual Studio 2019 you can run it as follows:
+The dotnet cli can be used to run. From the root:
 
-1. Open the Solution
-2. Right-Click the desired day project and select "Set as Startup Project"
-3. Execute the program with F5
-4. Marvel
-
-You should be able to run it with the dotnet 5 sdk, but I keep getting framework
-pack issues...
+```
+dotnet run -p ./advent_of_code [year] [day] [puzzle]
+```
 
 # Goals
 
