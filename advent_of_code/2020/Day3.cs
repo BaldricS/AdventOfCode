@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Text.RegularExpressions;
-
-namespace AOC
+﻿namespace AOC
 {
     [AdventOfCode(2020, 3)]
     public static class Day3_2020

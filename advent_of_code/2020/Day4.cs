@@ -25,21 +25,21 @@ namespace AOC
             return val >= min && val <= max;
         }
 
-        public static bool IsValidBirthYear(string value) => IsValidInt(value, 1920, 2002);
+        public static bool IsValidBirthYear(string value) => value.IsInRange(1920, 2002);
 
-        public static bool IsValidIssueYear(string value) => IsValidInt(value, 2010, 2020);
+        public static bool IsValidIssueYear(string value) => value.IsInRange(2010, 2020);
 
-        public static bool IsValidExpirationYear(string value) => IsValidInt(value, 2020, 2030);
+        public static bool IsValidExpirationYear(string value) => value.IsInRange(2020, 2030);
 
         public static bool IsValidHeight(string value)
         {
             var heightRegex = new Regex(@"^(\d+)(cm|in)$");
             var matches = heightRegex.Match(value);
-            if (matches.Groups[2].Value == "in" && IsValidInt(matches.Groups[1].Value, 59, 76))
+            if (matches.Groups[2].Value == "in" && matches.Groups[1].Value.IsInRange(59, 76))
             {
                 return true;
             }
-            else if (matches.Groups[2].Value == "cm" && IsValidInt(matches.Groups[1].Value, 150, 193))
+            else if (matches.Groups[2].Value == "cm" && matches.Groups[1].Value.IsInRange(150, 193))
             {
                 return true;
             }
@@ -74,27 +74,24 @@ namespace AOC
 
         public static int Solve(string[] lines, Func<string, bool> policy)
         {
-            var passportPieces = new List<string>();
-            int passports = 0;
-
-            for (int i = 0; i < lines.Length; ++i)
+            var passports = lines.Aggregate(new List<List<string>> { new List<string>() }, (acc, line) =>
             {
-                if (lines[i].Length == 0)
+                if (line.Length == 0)
                 {
-                    if (policy(string.Join(" ", passportPieces)))
-                    {
-                        ++passports;
-                    }
-
-                    passportPieces.Clear();
+                    acc.Add(new List<string>());
                 }
                 else
                 {
-                    passportPieces.Add(lines[i]);
+                    acc.Last().Add(line);
                 }
-            }
 
-            return passports;
+                return acc;
+            });
+
+            return passports
+                .Select(line => string.Join(" ", line))
+                .Where(policy)
+                .Count();
         }
 
         [Solver(1)]

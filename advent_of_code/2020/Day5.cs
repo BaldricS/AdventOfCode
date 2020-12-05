@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AOC
@@ -6,7 +7,7 @@ namespace AOC
     [AdventOfCode(2020, 5)]
     public static class Day5_2020
     {
-        public static int FindMidpoint(string seat, int low, int high, char highC)
+        public static int UnpackInteger(string seat, int low, int high, char highC)
         {
             if (seat.Length == 1)
             {
@@ -16,14 +17,14 @@ namespace AOC
             var mid = (high - low) / 2;
             if (seat[0] == highC)
             {
-                return FindMidpoint(seat[1..], low + mid + 1, high, highC);
+                return UnpackInteger(seat[1..], low + mid + 1, high, highC);
             }
 
-            return FindMidpoint(seat[1..], low, low + mid, highC);
+            return UnpackInteger(seat[1..], low, low + mid, highC);
         }
 
         public static int GetSeatNumber(string line) =>
-            FindMidpoint(line[..7], 0, 127, 'B') * 8 + FindMidpoint(line[7..], 0, 7, 'R');
+            UnpackInteger(line[..7], 0, 127, 'B') * 8 + UnpackInteger(line[7..], 0, 7, 'R');
 
         [Solver(1)]
         public static int Solve1(string[] input) => input.Max(GetSeatNumber);
