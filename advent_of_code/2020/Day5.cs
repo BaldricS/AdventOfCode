@@ -7,24 +7,11 @@ namespace AOC
     [AdventOfCode(2020, 5)]
     public static class Day5_2020
     {
-        public static int UnpackInteger(string seat, int low, int high, char highC)
-        {
-            if (seat.Length == 1)
-            {
-                return seat[0] == highC ? high : low;
-            }
+        public static int GetSeatNumber(string seat) => 
+            seat
+                .Select(c => c == 'B' || c == 'R' ? 1 : 0)
+                .Aggregate(0, (acc, num) => (acc << 1) | num);
 
-            var mid = (high - low) / 2;
-            if (seat[0] == highC)
-            {
-                return UnpackInteger(seat[1..], low + mid + 1, high, highC);
-            }
-
-            return UnpackInteger(seat[1..], low, low + mid, highC);
-        }
-
-        public static int GetSeatNumber(string line) =>
-            UnpackInteger(line[..7], 0, 127, 'B') * 8 + UnpackInteger(line[7..], 0, 7, 'R');
 
         [Solver(1)]
         public static int Solve1(IEnumerable<string> input) => input.Max(GetSeatNumber);
