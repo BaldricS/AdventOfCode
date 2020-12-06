@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,11 +9,8 @@ namespace AOC
     [AdventOfCode(2015, 4)]
     public static class Day4_2015
     {
-        [Solver(1)]
-        public static int FirstMD5(IEnumerable<string> lines)
+        public static int FindHash(string key, Func<byte[], bool> IsWinner)
         {
-            var key = lines.First();
-
             int i = 0;
             while (true)
             {
@@ -20,7 +18,7 @@ namespace AOC
                 var bytes = Encoding.ASCII.GetBytes(str);
                 var hash = MD5.HashData(bytes);
 
-                if (hash[0] == 0 && hash[1] == 0 && hash[2] < 8)
+                if (IsWinner(hash))
                 {
                     return i;
                 }
@@ -28,26 +26,13 @@ namespace AOC
                 ++i;
             }
         }
+
+        [Solver(1)]
+        public static int FirstMD5(IEnumerable<string> lines) =>
+            FindHash(lines.First(), bytes => bytes[0] == 0 && bytes[1] == 0 && bytes[2] < 8);
 
         [Solver(2)]
-        public static int FirstMD52(IEnumerable<string> lines)
-        {
-            var key = lines.First();
-
-            int i = 0;
-            while (true)
-            {
-                var str = $"{key}{i}";
-                var bytes = Encoding.ASCII.GetBytes(str);
-                var hash = MD5.HashData(bytes);
-
-                if (hash[0] == 0 && hash[1] == 0 && hash[2] == 0)
-                {
-                    return i;
-                }
-
-                ++i;
-            }
-        }
+        public static int FirstMD52(IEnumerable<string> lines) =>
+            FindHash(lines.First(), bytes => bytes[0] == 0 && bytes[1] == 0 && bytes[2] == 0);
     }
 }
