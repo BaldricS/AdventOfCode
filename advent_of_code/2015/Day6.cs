@@ -46,117 +46,83 @@ namespace AOC
                 ));
         }
 
-        [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> input)
+        public static T[,] RunGrid<T>(
+            IEnumerable<ChallengeType> input,
+            Func<T, T> onFunc,
+            Func<T, T> offFunc,
+            Func<T, T> toggleFunc
+        )
         {
-            var lightGrid = new bool[1000,1000];
+            var lightGrid = new T[1000, 1000];
 
-            foreach (var command in input)
+            void RunSection(Pair start, Pair end, Func<T, T> action)
             {
-                switch (command.Action)
+                for (int r = start.Y; r <= end.Y; ++r)
                 {
-                    case Action.On:
-                        for (int r = command.Start.Y; r <= command.End.Y; ++r)
-                        {
-                            for (int c = command.Start.X; c <= command.End.X; ++c)
-                            {
-                                lightGrid[r,c] = true;
-                            }
-                        }
-
-                        break;
-                    case Action.Off:
-                        for (int r = command.Start.Y; r <= command.End.Y; ++r)
-                        {
-                            for (int c = command.Start.X; c <= command.End.X; ++c)
-                            {
-                                lightGrid[r,c] = false;
-                            }
-                        }
-
-                        break;
-                    case Action.Toggle:
-                        for (int r = command.Start.Y; r <= command.End.Y; ++r)
-                        {
-                            for (int c = command.Start.X; c <= command.End.X; ++c)
-                            {
-                                lightGrid[r,c] = !lightGrid[r,c];
-                            }
-                        }
-
-                        break;
+                    for (int c = start.X; c <= end.X; ++c)
+                    {
+                        lightGrid[r, c] = action(lightGrid[r, c]);
+                    }
                 }
             }
 
+            Func<T, T> ChooseAction(Action action)
+            {
+                switch (action)
+                {
+                    case Action.On:
+                        return onFunc;
+                    case Action.Off:
+                        return offFunc;
+                    default:
+                        return toggleFunc;
+                }
+            }
+
+            foreach (var command in input)
+            {
+                RunSection(command.Start, command.End, ChooseAction(command.Action));
+            }
+
+            return lightGrid;
+        }
+
+        public static int Count<T>(T[,] grid, Func<T, int> toNum)
+        {
             int count = 0;
 
-            foreach (var light in lightGrid)
+            foreach (var light in grid)
             {
-                if (light)
-                {
-                    ++count;
-                }
+                count += toNum(light);
             }
 
             return count;
         }
 
+        [Solver(1)]
+        public static long Solve1(IEnumerable<ChallengeType> input)
+        {
+            var lightGrid = RunGrid<bool>(
+                input,
+                (curr) => true,
+                (curr) => false,
+                (curr) => !curr
+            );
+
+            return Count(lightGrid, (light) => light ? 1 : 0);
+        }
+
         [Solver(2)]
         public static long Solve2(IEnumerable<ChallengeType> input)
         {
-            var lightGrid = new int[1000,1000];
+            var lightGrid = RunGrid<int>(
+                input,
+                (curr) => curr + 1,
+                (curr) => curr > 0 ? curr - 1 : 0,
+                (curr) => curr + 2
+            );
 
-            foreach (var command in input)
-            {
-                switch (command.Action)
-                {
-                    case Action.On:
-                        for (int r = command.Start.Y; r <= command.End.Y; ++r)
-                        {
-                            for (int c = command.Start.X; c <= command.End.X; ++c)
-                            {
-                                ++lightGrid[r, c];
-                            }
-                        }
-
-                        break;
-                    case Action.Off:
-                        for (int r = command.Start.Y; r <= command.End.Y; ++r)
-                        {
-                            for (int c = command.Start.X; c <= command.End.X; ++c)
-                            {
-                                if (lightGrid[r,c] > 0)
-                                {
-                                    --lightGrid[r, c];
-                                }
-                            }
-                        }
-
-                        break;
-                    case Action.Toggle:
-                        for (int r = command.Start.Y; r <= command.End.Y; ++r)
-                        {
-                            for (int c = command.Start.X; c <= command.End.X; ++c)
-                            {
-                                lightGrid[r,c] += 2;
-                            }
-                        }
-
-                        break;
-                }
-            }
-
-            int count = 0;
-
-            foreach (var light in lightGrid)
-            {
-                if (light > 0)
-                {
-                    count += light;
-                }
-            }
-
-            return count;
+            return Count(lightGrid, (light) => light);
         }
     }
 }
