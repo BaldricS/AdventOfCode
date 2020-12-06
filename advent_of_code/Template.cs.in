@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace AOC
 {
-    using ChallengeType = string;
+    using ChallengeType = String;
 
     [AdventOfCode(2020, 1)]
     public static class Template
@@ -17,13 +17,13 @@ namespace AOC
         }
 
         [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> in)
+        public static long Solve1(IEnumerable<ChallengeType> input)
         {
             return 1;
         }
 
         [Solver(2)]
-        public static long Solve2(IEnumerable<ChallengeType> in)
+        public static long Solve2(IEnumerable<ChallengeType> input)
         {
             return 1;
         }
