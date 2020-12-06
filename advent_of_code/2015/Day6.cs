@@ -37,8 +37,7 @@ namespace AOC
         {
             return lines
                 .Select(l => Regex.Match(l, @"^(.*) (\d+),(\d+) through (\d+),(\d+)$"))
-                .Select(m => new Command(GetAction(m.Get(1)), m.GetPair(2), m.GetPair(4))
-                ));
+                .Select(m => new Command(GetAction(m.Get(1)), m.GetPair(2), m.GetPair(4)));
         }
 
         public static T[,] RunGrid<T>(
