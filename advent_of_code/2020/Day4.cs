@@ -65,19 +65,7 @@ namespace AOC
         [MapInput]
         public static IEnumerable<string> Map(string[] lines) =>
             lines
-                .Aggregate(new List<List<string>> { new List<string>() }, (acc, line) =>
-                {
-                    if (line.Length == 0)
-                    {
-                        acc.Add(new List<string>());
-                    }
-                    else
-                    {
-                        acc.Last().Add(line);
-                    }
-
-                    return acc;
-                })
+                .GatherByNewline()
                 .Select(line => string.Join(" ", line));
 
         [Solver(1)]
