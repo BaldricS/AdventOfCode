@@ -6,20 +6,18 @@ namespace AOC
     [AdventOfCode(2015, 3)]
     public static class Day3_2015
     {
-        public record Location(int Row, int Col);
-
-        public static Location Move(char dir, Location current)
+        public static Pair Move(char dir, Pair current)
         {
             switch (dir)
             {
                 case '^':
-                    return current with { Col = current.Col + 1 };
+                    return current with { Y = current.Y + 1 };
                 case 'v':
-                    return current with { Col = current.Col - 1 };
+                    return current with { Y = current.Y - 1 };
                 case '>':
-                    return current with { Row = current.Row + 1 };
+                    return current with { X = current.X + 1 };
                 default:
-                    return current with { Row = current.Row - 1 };
+                    return current with { X = current.X - 1 };
             }
         }
 
@@ -28,8 +26,8 @@ namespace AOC
         {
             var directions = lines.First();
 
-            var current = new Location(0, 0);
-            var uniqueHouses = new HashSet<Location> { current };
+            var current = new Pair(0, 0);
+            var uniqueHouses = new HashSet<Pair> { current };
 
             foreach (var dir in directions)
             {
@@ -45,9 +43,9 @@ namespace AOC
         {
             var directions = lines.First();
 
-            var santaLoc = new Location(0, 0);
+            var santaLoc = new Pair(0, 0);
             var roboSantaLoc = santaLoc;
-            var uniqueHouses = new HashSet<Location> { santaLoc };
+            var uniqueHouses = new HashSet<Pair> { santaLoc };
             bool moveSanta = true;
 
             foreach (var dir in directions)

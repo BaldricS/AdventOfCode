@@ -13,8 +13,6 @@ namespace AOC
         On
     }
 
-    public record Pair(int X, int Y);
-
     public record Command(Action Action, Pair Start, Pair End);
 
     [AdventOfCode(2015, 6)]
