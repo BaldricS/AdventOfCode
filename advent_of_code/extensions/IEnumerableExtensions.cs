@@ -15,6 +15,8 @@ namespace AOC
         }
 
         public static List<R> ToSortedList<T, R>(this IEnumerable<T> source, Func<T, R> map) =>
-            source.Select(map).ToSortedList();
+            source
+                .Select(map)
+                .ToSortedList();
     }
 }

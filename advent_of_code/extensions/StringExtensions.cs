@@ -2,14 +2,9 @@
 {
     public static class StringExtensions
     {
-        public static bool IsInRange(this string source, int min, int max)
-        {
-            if (int.TryParse(source, out int result))
-            {
-                return result.IsInRange(min, max);
-            }
-
-            return false;
-        }
+        public static bool IsInRange(this string source, int min, int max) =>
+            int.TryParse(source, out int result)
+            ? result.IsInRange(min, max)
+            : false;
     }
 }
