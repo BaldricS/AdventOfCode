@@ -23,8 +23,7 @@ namespace AOC
 
         public static bool IsValidHeight(string value)
         {
-            var heightRegex = new Regex(@"^(\d+)(cm|in)$");
-            var matches = heightRegex.Match(value);
+            var matches = Regex.Match(value, @"^(\d+)(cm|in)$");
             if (matches.Groups[2].Value == "in" && matches.Groups[1].Value.IsInRange(59, 76))
             {
                 return true;
@@ -37,12 +36,12 @@ namespace AOC
             return false;
         }
 
-        public static bool IsValidHairColor(string value) => new Regex(@"^#[0-9a-f]{6}$", RegexOptions.IgnoreCase).IsMatch(value);
+        public static bool IsValidHairColor(string value) => Regex.IsMatch(value, @"^#[0-9a-f]{6}$", RegexOptions.IgnoreCase);
 
         public static bool IsValidEyeColor(string value) =>
             new[] { "amb", "blu", "brn", "gry", "grn", "hzl", "oth" }.Any(e => value.Equals(e));
 
-        public static bool IsValidPin(string value) => new Regex(@"^\d{9}$").IsMatch(value);
+        public static bool IsValidPin(string value) => Regex.IsMatch(value, @"^\d{9}$");
 
         public static bool IsValidPassportStrict(string passport)
         {
