@@ -40,10 +40,10 @@ namespace AOC
                 var match = regex.Match(line);
 
                 return new Password(
-                    int.Parse(match.Groups[1].Value),
-                    int.Parse(match.Groups[2].Value),
-                    match.Groups[3].Value[0],
-                    match.Groups[4].Value
+                    match.Get(1).AsInt(),
+                    match.Get(2).AsInt(),
+                    match.Get(3)[0],
+                    match.Get(4)
                 );
             }
 

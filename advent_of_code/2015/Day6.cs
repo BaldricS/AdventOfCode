@@ -37,10 +37,7 @@ namespace AOC
         {
             return lines
                 .Select(l => Regex.Match(l, @"^(.*) (\d+),(\d+) through (\d+),(\d+)$"))
-                .Select(m => new Command(
-                    GetAction(m.Groups[1].Value),
-                    new Pair(int.Parse(m.Groups[2].Value), int.Parse(m.Groups[3].Value)),
-                    new Pair(int.Parse(m.Groups[4].Value), int.Parse(m.Groups[5].Value))
+                .Select(m => new Command(GetAction(m.Get(1)), m.GetPair(2), m.GetPair(4))
                 ));
         }
 

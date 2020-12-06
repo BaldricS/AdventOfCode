@@ -24,11 +24,11 @@ namespace AOC
         public static bool IsValidHeight(string value)
         {
             var matches = Regex.Match(value, @"^(\d+)(cm|in)$");
-            if (matches.Groups[2].Value == "in" && matches.Groups[1].Value.IsInRange(59, 76))
+            if (matches.Groups[2].Value == "in" && matches.Get(1).IsInRange(59, 76))
             {
                 return true;
             }
-            else if (matches.Groups[2].Value == "cm" && matches.Groups[1].Value.IsInRange(150, 193))
+            else if (matches.Groups[2].Value == "cm" && matches.Get(2).IsInRange(150, 193))
             {
                 return true;
             }
