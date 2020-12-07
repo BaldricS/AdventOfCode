@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace AOC
 {
@@ -32,83 +31,62 @@ namespace AOC
         public static long Solve1(IEnumerable<ChallengeType> input)
         {
             var values = new Dictionary<string, ushort>();
+            var commands = new Dictionary<string, Func<ushort, ushort, ushort>>
+            {
+                ["OR"] = (v1, v2) => (ushort)(v1 | v2),
+                ["AND"] = (v1, v2) => (ushort)(v1 & v2),
+                ["LSHIFT"] = (v1, v2) => (ushort)(v1 << v2),
+                ["RSHIFT"] = (v1, v2) => (ushort)(v1 >> v2)
+            };
+
+            ushort? GetValue(string val)
+            {
+                if (ushort.TryParse(val, out ushort i))
+                {
+                    return i;
+                }
+                else if (values.ContainsKey(val))
+                {
+                    return values[val];
+                }
+
+                return null;
+            }
 
             bool TryApply(string val1, string val2, string wire, Func<ushort, ushort, ushort> op)
             {
-                var firstIsInt = ushort.TryParse(val1, out ushort first);
-                var secondIsInt = ushort.TryParse(val2, out ushort second);
+                var first = GetValue(val1);
+                var second = GetValue(val2);
 
-                if (firstIsInt && secondIsInt)
+                if (first.HasValue && second.HasValue)
                 {
-                    values[wire] = op(first, second);
-                    return true;
-                }
-                else if (firstIsInt && !secondIsInt && values.ContainsKey(val2))
-                {
-                    values[wire] = op(first, values[val2]);
-                    return true;
-                }
-                else if (secondIsInt && !firstIsInt && values.ContainsKey(val1))
-                {
-                    values[wire] = op(values[val1], second);
-                    return true;
-                }
-                else if (values.ContainsKey(val1) && values.ContainsKey(val2))
-                {
-                    values[wire] = op(values[val1], values[val2]);
+                    values[wire] = op(first.Value, second.Value);
                     return true;
                 }
 
                 return false;
             }
 
-            bool ProcessAction(string[] action, string wire)
+            bool TryApplySingle(string val, string wire, Func<ushort, ushort> op)
             {
-                if (action.Length == 1)
+                var value = GetValue(val);
+                if (value.HasValue)
                 {
-                    if (int.TryParse(action[0], out int val))
-                    {
-                        values.Add(wire, action[0].AsUshort());
-                        return true;
-                    }
-                    else if (values.ContainsKey(action[0]))
-                    {
-                        values.Add(wire, values[action[0]]);
-                        return true;
-                    }
-
-                    return false;
-                }
-                if (action.Length == 2)
-                {
-                    if (values.ContainsKey(action[1]))
-                    {
-                        values.Add(wire, (ushort)~values[action[1]]);
-                        return true;
-                    }
-
-                    return false;
-                }
-                else if (action.Length == 3)
-                {
-                    switch (action[1])
-                    {
-                        case "OR":
-                            return TryApply(action[0], action[2], wire, (v1, v2) => (ushort)(v1 | v2));
-
-                        case "AND":
-                            return TryApply(action[0], action[2], wire, (v1, v2) => (ushort)(v1 & v2));
-
-                        case "LSHIFT":
-                            return TryApply(action[0], action[2], wire, (v1, v2) => (ushort)(v1 << v2));
-
-                        case "RSHIFT":
-                            return TryApply(action[0], action[2], wire, (v1, v2) => (ushort)(v1 >> v2));
-                    }
+                    values[wire] = op(value.Value);
+                    return true;
                 }
 
                 return false;
             }
+
+            bool ProcessAction(string[] action, string wire) =>
+                action.Length switch
+                {
+                    1 => TryApplySingle(action[0], wire, x => x),
+                    2 => TryApplySingle(action[1], wire, x => (ushort)~x),
+                    3 => TryApply(action[0], action[2], wire, commands[action[1]]),
+                    _ => false,
+                };
 
             var process = true;
             while (process)
@@ -125,8 +103,9 @@ namespace AOC
         public static long Solve2(IEnumerable<ChallengeType> input)
         {
             var aValue = Solve1(input);
-            var newInputs = input.ToList();
-            var wireB = newInputs.Find(ac => ac.Wire == "b");
+
+            var newInputs = input.ToArray();
+            var wireB = newInputs.First(ac => ac.Wire == "b");
             wireB.Actions = new[] { $"{aValue}" };
 
             return Solve1(newInputs);
