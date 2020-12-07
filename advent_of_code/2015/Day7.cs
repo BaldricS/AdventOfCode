@@ -46,30 +46,19 @@ namespace AOC
                 return null;
             }
 
-            bool TryApply(string val1, string val2, string wire, Func<ushort, ushort, ushort> op)
+            ushort? GetUnaryValue(string val, Func<ushort, ushort> op)
+            {
+                var v = GetValue(val);
+                return v.HasValue ? op(v.Value) : null;
+            }
+
+            ushort? GetBinaryValue(string val1, string val2, Func<ushort, ushort, ushort> op)
             {
                 var first = GetValue(val1);
                 var second = GetValue(val2);
+                var canApply = first.HasValue && second.HasValue;
 
-                if (first.HasValue && second.HasValue)
-                {
-                    values[wire] = op(first.Value, second.Value);
-                    return true;
-                }
-
-                return false;
-            }
-
-            bool TryApplySingle(string val, string wire, Func<ushort, ushort> op)
-            {
-                var value = GetValue(val);
-                if (value.HasValue)
-                {
-                    values[wire] = op(value.Value);
-                    return true;
-                }
-
-                return false;
+                return canApply ? op(first.Value, second.Value) : null;
             }
 
             Func<ushort, ushort, ushort> GetOp(string action) =>
@@ -81,14 +70,23 @@ namespace AOC
                     _ => (v1, v2) => (ushort)(v1 >> v2)
                 };
 
-            bool RunSimulation(string[] action, string wire) =>
-                action.Length switch
+            bool RunSimulation(string[] action, string wire)
+            {
+                var value = action.Length switch
                 {
-                    1 => TryApplySingle(action[0], wire, x => x),
-                    2 => TryApplySingle(action[1], wire, x => (ushort)~x),
-                    3 => TryApply(action[0], action[2], wire, GetOp(action[1])),
-                    _ => false,
+                    1 => GetValue(action[0]),
+                    2 => GetUnaryValue(action[1], x => (ushort)~x),
+                    3 => GetBinaryValue(action[0], action[2], GetOp(action[1])),
+                    _ => null
                 };
+
+                if (value.HasValue)
+                {
+                    values[wire] = value.Value;
+                }
+
+                return value.HasValue;
+            }
 
             while (input.Any())
             {
