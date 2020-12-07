@@ -6,20 +6,14 @@ namespace AOC
     [AdventOfCode(2015, 3)]
     public static class Day3_2015
     {
-        public static Pair Move(char dir, Pair current)
-        {
-            switch (dir)
+        public static Pair Move(char dir, Pair current) =>
+            dir switch
             {
-                case '^':
-                    return current with { Y = current.Y + 1 };
-                case 'v':
-                    return current with { Y = current.Y - 1 };
-                case '>':
-                    return current with { X = current.X + 1 };
-                default:
-                    return current with { X = current.X - 1 };
-            }
-        }
+                '^' => current with { Y = current.Y + 1 },
+                'v' => current with { Y = current.Y - 1 },
+                '>' => current with { X = current.X + 1 },
+                _ => current with { X = current.X - 1 }
+            };
 
         [Solver(1)]
         public static int HousesWithPresents(IEnumerable<string> lines)

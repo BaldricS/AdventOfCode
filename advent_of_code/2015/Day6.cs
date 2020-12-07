@@ -6,38 +6,18 @@ using System.Text.RegularExpressions;
 namespace AOC
 {
     using ChallengeType = Command;
-    public enum Action
-    {
-        Toggle,
-        Off,
-        On
-    }
 
-    public record Command(Action Action, Pair Start, Pair End);
+    public record Command(string Action, Pair Start, Pair End);
 
     [AdventOfCode(2015, 6)]
     public static class Day6_2015
     {
-
-        public static Action GetAction(string action)
-        {
-            switch (action)
-            {
-                case "turn off":
-                    return Action.Off;
-                case "turn on":
-                    return Action.On;
-                default:
-                    return Action.Toggle;
-            }
-        }
-
         [MapInput]
         public static IEnumerable<ChallengeType> Map(string[] lines)
         {
             return lines
                 .Select(l => Regex.Match(l, @"^(.*) (\d+),(\d+) through (\d+),(\d+)$"))
-                .Select(m => new Command(GetAction(m.Get(1)), m.GetPair(2), m.GetPair(4)));
+                .Select(m => new Command(m.Get(1), m.GetPair(2), m.GetPair(4)));
         }
 
         public static T[,] RunGrid<T>(
@@ -60,22 +40,18 @@ namespace AOC
                 }
             }
 
-            Func<T, T> ChooseAction(Action action)
-            {
-                switch (action)
-                {
-                    case Action.On:
-                        return onFunc;
-                    case Action.Off:
-                        return offFunc;
-                    default:
-                        return toggleFunc;
-                }
-            }
-
             foreach (var command in input)
             {
-                RunSection(command.Start, command.End, ChooseAction(command.Action));
+                RunSection(
+                    command.Start,
+                    command.End,
+                    command.Action switch
+                    {
+                        "turn on" => onFunc,
+                        "turn off" => offFunc,
+                        _ => toggleFunc
+                    }
+                );
             }
 
             return lightGrid;
