@@ -31,13 +31,6 @@ namespace AOC
         public static long Solve1(IEnumerable<ChallengeType> input)
         {
             var values = new Dictionary<string, ushort>();
-            var commands = new Dictionary<string, Func<ushort, ushort, ushort>>
-            {
-                ["OR"] = (v1, v2) => (ushort)(v1 | v2),
-                ["AND"] = (v1, v2) => (ushort)(v1 & v2),
-                ["LSHIFT"] = (v1, v2) => (ushort)(v1 << v2),
-                ["RSHIFT"] = (v1, v2) => (ushort)(v1 >> v2)
-            };
 
             ushort? GetValue(string val)
             {
@@ -79,12 +72,21 @@ namespace AOC
                 return false;
             }
 
+            Func<ushort, ushort, ushort> GetOp(string action) =>
+                action switch
+                {
+                    "OR" => (v1, v2) => (ushort)(v1 | v2),
+                    "AND" => (v1, v2) => (ushort)(v1 & v2),
+                    "LSHIFT" => (v1, v2) => (ushort)(v1 << v2),
+                    _ => (v1, v2) => (ushort)(v1 >> v2)
+                };
+
             bool ProcessAction(string[] action, string wire) =>
                 action.Length switch
                 {
                     1 => TryApplySingle(action[0], wire, x => x),
                     2 => TryApplySingle(action[1], wire, x => (ushort)~x),
-                    3 => TryApply(action[0], action[2], wire, commands[action[1]]),
+                    3 => TryApply(action[0], action[2], wire, GetOp(action[1])),
                     _ => false,
                 };
 
