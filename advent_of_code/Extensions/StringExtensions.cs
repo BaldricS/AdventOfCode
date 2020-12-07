@@ -6,5 +6,7 @@
             int.TryParse(source, out int result) && result.IsInRange(min, max);
 
         public static int AsInt(this string source) => int.Parse(source);
+
+        public static ushort AsUshort(this string source) => ushort.Parse(source);
     }
 }
