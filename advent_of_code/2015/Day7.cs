@@ -81,7 +81,7 @@ namespace AOC
                     _ => (v1, v2) => (ushort)(v1 >> v2)
                 };
 
-            bool ProcessAction(string[] action, string wire) =>
+            bool RunSimulation(string[] action, string wire) =>
                 action.Length switch
                 {
                     1 => TryApplySingle(action[0], wire, x => x),
@@ -92,7 +92,7 @@ namespace AOC
 
             while (input.Any())
             {
-                input = input.Where(ac => !ProcessAction(ac.Actions, ac.Wire)).ToArray();
+                input = input.Where(ac => !RunSimulation(ac.Actions, ac.Wire)).ToArray();
             }
 
             return values["a"];
