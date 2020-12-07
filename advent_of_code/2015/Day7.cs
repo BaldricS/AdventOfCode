@@ -88,12 +88,9 @@ namespace AOC
                     _ => false,
                 };
 
-            var process = true;
-            while (process)
+            while (input.Any())
             {
-                var remaining = input.Where(ac => !ProcessAction(ac.Actions, ac.Wire)).ToArray();
-                process = remaining.Length > 0;
-                input = remaining;
+                input = input.Where(ac => !ProcessAction(ac.Actions, ac.Wire)).ToArray();
             }
 
             return values["a"];
