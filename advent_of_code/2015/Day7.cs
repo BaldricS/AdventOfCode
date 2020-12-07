@@ -42,7 +42,8 @@ namespace AOC
                 {
                     values[wire] = op(first, second);
                     return true;
-                } else if (firstIsInt && !secondIsInt && values.ContainsKey(val2))
+                }
+                else if (firstIsInt && !secondIsInt && values.ContainsKey(val2))
                 {
                     values[wire] = op(first, values[val2]);
                     return true;
@@ -110,7 +111,7 @@ namespace AOC
             }
 
             var process = true;
-            while(process)
+            while (process)
             {
                 var remaining = input.Where(ac => !ProcessAction(ac.Actions, ac.Wire)).ToArray();
                 process = remaining.Length > 0;
