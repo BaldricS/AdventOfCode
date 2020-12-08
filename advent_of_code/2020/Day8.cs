@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -18,7 +17,7 @@ namespace AOC
                 .Select(l => Regex.Match(l, @"^(.*?) ([-+]\d+)$"))
                 .Select(m => new ChallengeType(m.Get(1), m.Get(2).AsInt()));
 
-        public static (long, bool) RunProgram(IEnumerable<ChallengeType> input)
+        public static (long, bool) CheckForLoop(IEnumerable<ChallengeType> input)
         {
             long acc = 0;
             int iPtr = 0;
@@ -53,7 +52,7 @@ namespace AOC
         }
 
         [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> input) => RunProgram(input).Item1;
+        public static long Solve1(IEnumerable<ChallengeType> input) => CheckForLoop(input).Item1;
 
         [Solver(2)]
         public static long Solve2(IEnumerable<ChallengeType> input)
@@ -62,29 +61,25 @@ namespace AOC
 
             for (int i = 0; i < instructions.Length; ++i)
             {
-                if (instructions[i].Name == "nop")
+                var swapTo = instructions[i].Name switch
                 {
-                    instructions[i] = instructions[i] with { Name = "jmp" };
+                    "nop" => "jmp",
+                    "jmp" => "nop",
+                    _ => null
+                };
 
-                    var result = RunProgram(instructions);
+                if (swapTo != null)
+                {
+                    var initial = instructions[i].Name;
+                    instructions[i] = instructions[i] with { Name = swapTo };
+
+                    var result = CheckForLoop(instructions);
                     if (!result.Item2)
                     {
                         return result.Item1;
                     }
 
-                    instructions[i] = instructions[i] with { Name = "nop" };
-                }
-                else if (instructions[i].Name == "jmp")
-                {
-                    instructions[i] = instructions[i] with { Name = "nop" };
-
-                    var result = RunProgram(instructions);
-                    if (!result.Item2)
-                    {
-                        return result.Item1;
-                    }
-
-                    instructions[i] = instructions[i] with { Name = "jmp" };
+                    instructions[i] = instructions[i] with { Name = initial };
                 }
             }
 
