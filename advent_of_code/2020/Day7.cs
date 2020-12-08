@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -9,9 +8,14 @@ namespace AOC
 
     public class Bag
     {
+        public Bag (string name)
+        {
+            Name = name;
+        }
+
         public string Name { get; set; }
-        public List<Bag> ContainedBy { get; set; }
-        public List<(int, Bag)> Contains { get; set; }
+        public List<Bag> ContainedBy { get; set; } = new List<Bag>();
+        public List<(int, Bag)> Contains { get; set; } = new List<(int, Bag)>();
     }
 
     [AdventOfCode(2020, 7)]
@@ -20,43 +24,25 @@ namespace AOC
         public static void GetBag(string line, ChallengeType bags)
         {
             var pieces = line.Split(" bags contain ");
+            var bag = bags.GetValueOrDefault(pieces[0]) ?? new Bag(pieces[0]);
+
             var additionalBags = Regex.Matches(pieces[1], @"(\d+) (.*?) bags?");
-
-            if (!bags.ContainsKey(pieces[0]))
-            {
-                bags.Add(pieces[0], new Bag
-                {
-                    Name = pieces[0],
-                    Contains = new List<(int, Bag)>(),
-                    ContainedBy = new List<Bag>()
-                });
-            }
-
-            var bag = bags[pieces[0]];
-
             foreach (Match match in additionalBags)
             {
                 var numBags = match.Get(1).AsInt();
                 var bagName = match.Get(2);
+                var childBag = bags.GetValueOrDefault(bagName) ?? new Bag(bagName);
 
-                if (!bags.ContainsKey(bagName))
-                {
-                    bags.Add(bagName, new Bag
-                    {
-                        Name = bagName,
-                        Contains = new List<(int, Bag)>(),
-                        ContainedBy = new List<Bag>()
-                    });
-                }
-
-                var childBag = bags[bagName];
                 childBag.ContainedBy.Add(bag);
-
                 bag.Contains.Add((numBags, childBag));
+
+                bags[bagName] = childBag;
             }
+
+            bags[pieces[0]] = bag;
         }
 
-		[MapInput]
+        [MapInput]
         public static IEnumerable<ChallengeType> Map(string[] lines)
         {
             var bags = new ChallengeType();
@@ -72,41 +58,32 @@ namespace AOC
         [Solver(1)]
         public static long Solve1(IEnumerable<ChallengeType> input)
         {
-            var bagGraph = input.First();
+            var visited = new HashSet<string>();
 
-            var shiningBag = bagGraph["shiny gold"];
-            var containedSet = new HashSet<string>();
-
-            var toVisit = new List<Bag>(shiningBag.ContainedBy);
-            while (toVisit.Count > 0)
+            void MarkChildren(Bag bag)
             {
-                var next = toVisit.First();
-                toVisit.RemoveAt(0);
-
-                if (containedSet.Contains(next.Name))
+                foreach (var b in bag.ContainedBy)
                 {
-                    continue;
-                }
+                    if (visited.Contains(b.Name))
+                    {
+                        continue;
+                    }
 
-                containedSet.Add(next.Name);
-                toVisit.AddRange(next.ContainedBy);
+                    MarkChildren(b);
+                    visited.Add(b.Name);
+                }
             }
 
-            return containedSet.Count;
+            MarkChildren(input.First()["shiny gold"]);
+            return visited.Count;
         }
 
         public static long CountBags(Bag bag) =>
             bag.Contains.Sum(b => b.Item1 * (1 + CountBags(b.Item2)));
 
         [Solver(2)]
-        public static long Solve2(IEnumerable<ChallengeType> input)
-        {
-            var bagGraph = input.First();
-
-            var shiningBag = bagGraph["shiny gold"];
-            Console.WriteLine(shiningBag.Contains.First().Item1);
-
-            return CountBags(shiningBag);
-        }
+        public static long Solve2(IEnumerable<ChallengeType> input) =>
+            CountBags(input.First()["shiny gold"]);
+        
     }
 }

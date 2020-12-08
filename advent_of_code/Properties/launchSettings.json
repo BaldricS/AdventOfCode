@@ -2,7 +2,7 @@
   "profiles": {
     "advent_of_code": {
       "commandName": "Project",
-      "commandLineArgs": "2020 6 2",
+      "commandLineArgs": "2020 7 1",
       "workingDirectory": "$(SolutionDir)"
     }
   }
