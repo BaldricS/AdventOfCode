@@ -70,7 +70,7 @@ namespace AOC
                     _ => (v1, v2) => (ushort)(v1 >> v2)
                 };
 
-            bool RunSimulation(string[] action, string wire)
+            bool DidUpdate(string[] action, string wire)
             {
                 var value = action.Length switch
                 {
@@ -90,7 +90,7 @@ namespace AOC
 
             while (input.Any())
             {
-                input = input.Where(ac => !RunSimulation(ac.Actions, ac.Wire)).ToArray();
+                input = input.Where(ac => !DidUpdate(ac.Actions, ac.Wire)).ToArray();
             }
 
             return values["a"];
