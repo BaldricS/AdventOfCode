@@ -8,7 +8,7 @@ namespace AOC
     using ChallengeType = String;
 
     [AdventOfCode(2015, 8)]
-    public static class Day8_2020
+    public static class Day8_2015
     {
         public static long GetCharacters(string line) =>
             Regex.Replace(line, @"\\\\|\\""|\\x[a-f0-9]{2}", "_").Length - 2;
