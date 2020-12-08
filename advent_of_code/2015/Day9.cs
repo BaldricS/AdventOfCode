@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -45,32 +44,25 @@ namespace AOC
             return new[] { cities };
         }
 
-        public static List<List<string>> GetAllPaths(City start)
+        public static List<string[]> GetAllPaths(City start)
         {
-            var paths = new List<List<string>>();
+            var paths = new List<string[]>();
 
-            void GetPaths(City city, HashSet<string> visited, List<string> path)
+            void GetPaths(City city, HashSet<string> visited, IEnumerable<string> path)
             {
                 var toVisit = city.Connections.Where(c => !visited.Contains(c.Item2.Name));
                 if (!toVisit.Any())
                 {
-                    paths.Add(new List<string>(path));
+                    paths.Add(path.ToArray());
                     return;
                 }
 
-                foreach (var conn in city.Connections)
+                foreach (var conn in toVisit)
                 {
-                    if (visited.Contains(conn.Item2.Name))
-                    {
-                        continue;
-                    }
-
                     visited.Add(conn.Item2.Name);
-                    path.Add(conn.Item2.Name);
 
-                    GetPaths(conn.Item2, visited, path);
+                    GetPaths(conn.Item2, visited, path.Append(conn.Item2.Name));
 
-                    path.RemoveAt(path.Count - 1);
                     visited.Remove(conn.Item2.Name);
                 }
             }
@@ -78,27 +70,17 @@ namespace AOC
             GetPaths(
                 start,
                 new HashSet<string> { start.Name },
-                new List<string> { start.Name }
+                new [] { start.Name }
             );
 
             return paths;
         }
 
-        public static long SumPath(List<string> path, ChallengeType input)
-        {
-            long distance = 0;
-
-            for (int i = 1; i < path.Count; ++i)
-            {
-                var prev = path[i - 1];
-                var current = path[i];
-
-                var connections = input[prev].Connections;
-                distance += input[prev].Connections.First(c => c.Item2.Name == current).Item1;
-            }
-
-            return distance;
-        }
+        public static long SumPath(string[] path, ChallengeType input) =>
+            path
+                .Skip(1)
+                .Zip(path)
+                .Sum(ps => input[ps.First].Connections.First(c => c.Item2.Name == ps.Second).Item1);
 
         [Solver(1)]
         public static long Solve1(IEnumerable<ChallengeType> input)
