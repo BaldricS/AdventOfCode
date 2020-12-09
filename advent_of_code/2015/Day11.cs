@@ -54,20 +54,15 @@ namespace AOC
         static string IncrementPassword(string pw)
         {
             var password = new char[8];
-            bool hadCarry = false;
 
             for (int i = pw.Length - 1; i >= 0; --i)
             {
                 char next = (char)(pw[i] + 1);
-                if (next > 'z')
-                {
-                    next = 'a';
-                    hadCarry = true;
-                }
+                bool hasCarry = next > 'z';
 
-                password[i] = next;
+                password[i] = hasCarry ? 'a' : next;
 
-                if (!hadCarry)
+                if (hasCarry)
                 {
                     for (int j = i - 1; j >= 0; --j)
                     {
@@ -76,27 +71,28 @@ namespace AOC
 
                     break;
                 }
-
-                hadCarry = false;
             }
 
             return string.Join("", password);
         }
 
-        [Solver(1)]
-        public static string Solve1(IEnumerable<ChallengeType> input)
+        public static string NextPassword(string input)
         {
-            var pw = input.First();
-            while (!IsValidPassword(pw))
+            do
             {
-                pw = IncrementPassword(pw);
-            }
+                input = IncrementPassword(input);
+            } while (!IsValidPassword(input));
 
-            return pw;
+            return input;
         }
+
+
+        [Solver(1)]
+        public static string Solve1(IEnumerable<ChallengeType> input) =>
+            NextPassword(input.First());
 
         [Solver(2)]
         public static string Solve2(IEnumerable<ChallengeType> input) =>
-            Solve1(new[] { IncrementPassword(Solve1(input)) });
+            NextPassword(NextPassword(input.First()));
     }
 }
