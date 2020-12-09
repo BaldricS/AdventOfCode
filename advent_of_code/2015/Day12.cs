@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
@@ -13,38 +14,29 @@ namespace AOC
         public static IEnumerable<ChallengeType> Map(string[] lines) =>
             lines.Select(l => ChallengeType.Parse(l));
 
-        public static long AccumulateNumbers(JsonElement element) =>
-            element.ValueKind switch
+        public static long Accumulate(JsonElement ele, Func<JsonElement, bool> pred) =>
+            ele.ValueKind switch
             {
-                JsonValueKind.Array => element.EnumerateArray().Sum(AccumulateNumbers),
-                JsonValueKind.Object => element.EnumerateObject().Sum(p => AccumulateNumbers(p.Value)),
-                JsonValueKind.Number => element.GetInt64(),
+                JsonValueKind.Object when pred(ele) => ele.EnumerateObject().Sum(p => Accumulate(p.Value, pred)),
+                JsonValueKind.Array => ele.EnumerateArray().Sum(e => Accumulate(e, pred)),
+                JsonValueKind.Number => ele.GetInt64(),
                 _ => 0
             };
 
-        public static bool CanProcess(JsonElement element) =>
+        public static bool HasNoRedValue(JsonElement element) =>
             element
                 .EnumerateObject()
                 .Select(p => p.Value)
                 .Where(p => p.ValueKind == JsonValueKind.String)
                 .All(p => p.GetString() != "red");
 
-        public static long AccumulateNumbersIgnoreRed(JsonElement element) =>
-            element.ValueKind switch
-            {
-                JsonValueKind.Array => element.EnumerateArray().Sum(AccumulateNumbersIgnoreRed),
-                JsonValueKind.Object when CanProcess(element) => element.EnumerateObject().Sum(p => AccumulateNumbersIgnoreRed(p.Value)),
-                JsonValueKind.Number => element.GetInt64(),
-                _ => 0
-            };
-
         [Solver(1)]
         public static long Solve1(IEnumerable<ChallengeType> input) =>
-            AccumulateNumbers(input.First().RootElement);
+            Accumulate(input.First().RootElement, obj => true);
 
         [Solver(2)]
         public static long Solve2(IEnumerable<ChallengeType> input) =>
-            AccumulateNumbersIgnoreRed(input.First().RootElement);
-        
+            Accumulate(input.First().RootElement, HasNoRedValue);
+
     }
 }
