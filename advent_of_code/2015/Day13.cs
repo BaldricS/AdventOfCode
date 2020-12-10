@@ -20,24 +20,15 @@ namespace AOC
                 .GroupBy(d => d.Person, d => d)
                 .ToDictionary(d => d.Key, d => d.ToDictionary(p => p.Target, p => p.Happiness));
 
-        public static IEnumerable<IEnumerable<string>> GeneratePermutations(IEnumerable<string> items) =>
-            items.Skip(1).Any() switch
-            {
-                false => Enumerable.Repeat(items, 1),
-                true => items.SelectMany(item =>
-                        GeneratePermutations(items.Where(i => item != i)).Select(p => p.Prepend(item)))
-            };
-
         public static int ScoreArrangement(List<string> seating, ChallengeType scores) =>
             seating
-                .Zip(seating.Skip(1))
-                .Sum(pair => scores[pair.First][pair.Second] + scores[pair.Second][pair.First])
-                + scores[seating.First()][seating.Last()]
-                + scores[seating.Last()][seating.First()];
+                .PairWithWrap()
+                .Sum(pair => scores[pair.First][pair.Second] + scores[pair.Second][pair.First]);
 
         public static int TopScore(ChallengeType scores) =>
-            GeneratePermutations(scores.Keys)
-            .Select(p => ScoreArrangement(p.ToList(), scores))
+            scores.Keys
+            .Permutations()
+            .Select(p => ScoreArrangement(p, scores))
             .Max();
 
         [Solver(1)]
