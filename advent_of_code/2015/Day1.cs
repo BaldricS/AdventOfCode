@@ -11,14 +11,12 @@ namespace AOC
         public static long CountDown(string line) => line.Count(c => c == ')');
 
         [Solver(1)]
-        public static long GetFloor(IEnumerable<string> lines) =>
-            lines.Select(line => CountUp(line) - CountDown(line)).Sum();
+        public static long GetFloor(string elevator) => CountUp(elevator) - CountDown(elevator);
 
         [Solver(2)]
-        public static long GetFirstBasement(IEnumerable<string> lines)
+        public static long GetFirstBasement(string elevator)
         {
             long currentFloor = 0;
-            string elevator = lines.First();
 
             for (int i = 0; i < elevator.Length; ++i)
             {
