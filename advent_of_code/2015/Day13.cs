@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace AOC
@@ -11,75 +9,39 @@ namespace AOC
     [AdventOfCode(2015, 13)]
     public static class Template
     {
+        public static (string Person, string Target, int Happiness) ToData(Match m) =>
+            (m.Get(1), m.Get(4), (m.Get(2) == "gain" ? 1 : -1) * m.Get(3).AsInt());
+
         [MapInput]
-        public static ChallengeType Map(string[] lines)
-        {
-            var result = new ChallengeType();
+        public static ChallengeType Map(string[] lines) =>
+            lines
+                .Select(l => Regex.Match(l, @"^(\w+) .* (gain|lose) (\d+) .* (\w+)."))
+                .Select(ToData)
+                .GroupBy(d => d.Person, d => d)
+                .ToDictionary(d => d.Key, d => d.ToDictionary(p => p.Target, p => p.Happiness));
 
-            foreach (var l in lines)
+        public static IEnumerable<IEnumerable<string>> GeneratePermutations(IEnumerable<string> items) =>
+            items.Skip(1).Any() switch
             {
-                var data = Regex.Match(l, @"^(\w+) .* (gain|lose) (\d+) .* (\w+).");
+                false => Enumerable.Repeat(items, 1),
+                true => items.SelectMany(item =>
+                        GeneratePermutations(items.Where(i => item != i)).Select(p => p.Prepend(item)))
+            };
 
-                var person = data.Get(1);
-                var target = data.Get(4);
-                var pos = data.Get(2) == "gain";
-                var amount = (pos ? 1 : -1) * data.Get(3).AsInt();
+        public static int ScoreArrangement(List<string> seating, ChallengeType scores) =>
+            seating
+                .Zip(seating.Skip(1))
+                .Sum(pair => scores[pair.First][pair.Second] + scores[pair.Second][pair.First])
+                + scores[seating.First()][seating.Last()]
+                + scores[seating.Last()][seating.First()];
 
-                var stats = result.GetValueOrDefault(person) ?? new Dictionary<string, int>();
-
-                stats[target] = amount;
-                result[person] = stats;
-            }
-
-            return result;
-        }
-
-        public static List<List<string>> GeneratePermutations(List<string> items)
-        {
-            if (items.Count == 1)
-            {
-                return new List<List<string>>
-                {
-                    items.ToList()
-                };
-            }
-
-            var result = new List<List<string>>();
-
-            foreach (var item in items)
-            {
-                var without = items.Where(i => item != i).ToList();
-                var childPerms = GeneratePermutations(without);
-
-                result.AddRange(childPerms.Select(p => p.Prepend(item).ToList()));
-            }
-
-            return result;
-        }
-
-        public static int ScoreArrangement(List<string> seating, ChallengeType scores)
-        {
-            int sum = 0;
-
-            for (int i = 0; i < seating.Count - 1; ++i)
-            {
-                var left = seating[i];
-                var right = seating[i + 1];
-
-                sum += scores[left][right];
-                sum += scores[right][left];
-            }
-
-            return sum + scores[seating.First()][seating.Last()] + scores[seating.Last()][seating.First()];
-        }
+        public static int TopScore(ChallengeType scores) =>
+            GeneratePermutations(scores.Keys)
+            .Select(p => ScoreArrangement(p.ToList(), scores))
+            .Max();
 
         [Solver(1)]
-        public static long Solve1(ChallengeType input)
-        {
-            var permutations = GeneratePermutations(input.Keys.ToList());
-
-            return permutations.Select(p => ScoreArrangement(p, input)).Max();
-        }
+        public static long Solve1(ChallengeType input) => TopScore(input);
 
         [Solver(2)]
         public static long Solve2(ChallengeType input)
@@ -91,7 +53,7 @@ namespace AOC
 
             input["scott"] = input.Keys.ToDictionary(k => k, _ => 0);
 
-            return GeneratePermutations(input.Keys.ToList()).Select(p => ScoreArrangement(p, input)).Max();
+            return TopScore(input);
         }
     }
 }
