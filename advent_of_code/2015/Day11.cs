@@ -73,11 +73,9 @@ namespace AOC
 
 
         [Solver(1)]
-        public static string Solve1(IEnumerable<ChallengeType> input) =>
-            NextPassword(input.First());
+        public static string Solve1(ChallengeType input) => NextPassword(input);
 
         [Solver(2)]
-        public static string Solve2(IEnumerable<ChallengeType> input) =>
-            NextPassword(NextPassword(input.First()));
+        public static string Solve2(ChallengeType input) => NextPassword(NextPassword(input));
     }
 }

@@ -37,9 +37,8 @@ namespace AOC
         }
 
         [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> input)
+        public static long Solve1(ChallengeType seed)
         {
-            var seed = input.First();
             for (int i = 0; i < 40; ++i)
             {
                 seed = LookAndSay(seed);
@@ -49,9 +48,8 @@ namespace AOC
         }
 
         [Solver(2)]
-        public static long Solve2(IEnumerable<ChallengeType> input)
+        public static long Solve2(ChallengeType seed)
         {
-            var seed = input.First();
             for (int i = 0; i < 50; ++i)
             {
                 seed = LookAndSay(seed);

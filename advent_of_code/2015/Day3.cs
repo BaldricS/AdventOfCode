@@ -16,10 +16,8 @@ namespace AOC
             };
 
         [Solver(1)]
-        public static int HousesWithPresents(IEnumerable<string> lines)
+        public static int HousesWithPresents(string directions)
         {
-            var directions = lines.First();
-
             var current = new Pair(0, 0);
             var uniqueHouses = new HashSet<Pair> { current };
 
@@ -33,10 +31,8 @@ namespace AOC
         }
 
         [Solver(2)]
-        public static int HousesWithRoboPresents(IEnumerable<string> lines)
+        public static int HousesWithRoboPresents(string directions)
         {
-            var directions = lines.First();
-
             var santaLoc = new Pair(0, 0);
             var roboSantaLoc = santaLoc;
             var uniqueHouses = new HashSet<Pair> { santaLoc };

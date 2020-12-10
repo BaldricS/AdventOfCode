@@ -28,11 +28,11 @@ namespace AOC
         }
 
         [Solver(1)]
-        public static int FirstMD5(IEnumerable<string> lines) =>
-            FindHash(lines.First(), bytes => bytes[0] == 0 && bytes[1] == 0 && bytes[2] < 8);
+        public static int FirstMD5(string key) =>
+            FindHash(key, bytes => bytes[0] == 0 && bytes[1] == 0 && bytes[2] < 8);
 
         [Solver(2)]
-        public static int FirstMD52(IEnumerable<string> lines) =>
-            FindHash(lines.First(), bytes => bytes[0] == 0 && bytes[1] == 0 && bytes[2] == 0);
+        public static int FirstMD52(string key) =>
+            FindHash(key, bytes => bytes[0] == 0 && bytes[1] == 0 && bytes[2] == 0);
     }
 }

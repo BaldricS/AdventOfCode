@@ -5,14 +5,13 @@ using System.Text.Json;
 
 namespace AOC
 {
-    using ChallengeType = JsonDocument;
+    using ChallengeType = JsonElement;
 
     [AdventOfCode(2015, 12)]
     public static class Day12_2015
     {
         [MapInput]
-        public static IEnumerable<ChallengeType> Map(string[] lines) =>
-            lines.Select(l => ChallengeType.Parse(l));
+        public static ChallengeType Map(string[] lines) => JsonDocument.Parse(lines.First()).RootElement;
 
         public static long Accumulate(JsonElement ele, Func<JsonElement, bool> pred) =>
             ele.ValueKind switch
@@ -31,12 +30,10 @@ namespace AOC
                 .All(p => p.GetString() != "red");
 
         [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> input) =>
-            Accumulate(input.First().RootElement, obj => true);
+        public static long Solve1(ChallengeType input) => Accumulate(input, obj => true);
 
         [Solver(2)]
-        public static long Solve2(IEnumerable<ChallengeType> input) =>
-            Accumulate(input.First().RootElement, HasNoRedValue);
+        public static long Solve2(ChallengeType input) => Accumulate(input, HasNoRedValue);
 
     }
 }
