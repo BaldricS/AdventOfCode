@@ -25,26 +25,11 @@ namespace AOC
 
         static bool NoEvilLetters(string pw) => !Regex.IsMatch(pw, @"[iol]");
 
-        static bool TwoDoublePairs(string pw)
-        {
-            bool hasOnePair = false;
-
-            for (int i = 0; i < pw.Length - 1; ++i)
-            {
-                if (pw[i] == pw[i + 1])
-                {
-                    if (hasOnePair)
-                    {
-                        return true;
-                    }
-
-                    hasOnePair = true;
-                    ++i;
-                }
-            }
-
-            return false;
-        }
+        static bool TwoDoublePairs(string pw) =>
+            pw
+                .Pair()
+                .Where(p => p.First == p.Second)
+                .Count() >= 2;
 
         static bool IsValidPassword(string line) =>
             HasIncrementingSection(line)
@@ -62,7 +47,7 @@ namespace AOC
 
                 password[i] = hasCarry ? 'a' : next;
 
-                if (hasCarry)
+                if (!hasCarry)
                 {
                     for (int j = i - 1; j >= 0; --j)
                     {
