@@ -7,7 +7,7 @@ namespace AOC
     using ChallengeType = Dictionary<string, Dictionary<string, int>>;
 
     [AdventOfCode(2015, 13)]
-    public static class Template
+    public static class Day13_2015
     {
         public static (string Person, string Target, int Happiness) ToData(Match m) =>
             (m.Get(1), m.Get(4), (m.Get(2) == "gain" ? 1 : -1) * m.Get(3).AsInt());
