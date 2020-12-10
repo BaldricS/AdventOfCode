@@ -19,29 +19,27 @@ namespace AOC
     [AdventOfCode(2015, 9)]
     public static class Day9_2015
     {
+        public static (string Name, string Target, int Distance) ToData(Match m) =>
+            (m.Get(1), m.Get(2), m.Get(3).AsInt());
+
         [MapInput]
-        public static IEnumerable<ChallengeType> Map(string[] lines)
+        public static ChallengeType Map(string[] lines)
         {
             var cities = new Dictionary<string, City>();
-
-            var matches = lines.Select(l => Regex.Match(l, @"(.*?) to (.*?) = (\d+)"));
-            foreach (Match match in matches)
+            var matches = lines.Select(l => Regex.Match(l, @"(.*?) to (.*?) = (\d+)")).Select(ToData);
+            foreach (var data in matches)
             {
-                var cityName = match.Get(1);
-                var targetCity = match.Get(2);
-                var distance = match.Get(3).AsInt();
+                var city = cities.GetValueOrDefault(data.Name) ?? new City(data.Name);
+                var target = cities.GetValueOrDefault(data.Target) ?? new City(data.Target);
 
-                var city = cities.GetValueOrDefault(cityName) ?? new City(cityName);
-                var target = cities.GetValueOrDefault(targetCity) ?? new City(targetCity);
+                city.Connections.Add((data.Distance, target));
+                target.Connections.Add((data.Distance, city));
 
-                city.Connections.Add((distance, target));
-                target.Connections.Add((distance, city));
-
-                cities[cityName] = city;
-                cities[targetCity] = target;
+                cities[data.Name] = city;
+                cities[data.Target] = target;
             }
 
-            return new[] { cities };
+            return cities;
         }
 
         public static List<string[]> GetAllPaths(City start)
@@ -78,28 +76,21 @@ namespace AOC
 
         public static long SumPath(string[] path, ChallengeType input) =>
             path
-                .Skip(1)
-                .Zip(path)
+                .Pair()
                 .Sum(ps => input[ps.First].Connections.First(c => c.Item2.Name == ps.Second).Item1);
 
         [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> input)
-        {
-            var graph = input.First();
-            return graph
+        public static long Solve1(ChallengeType input) =>
+            input
                 .SelectMany(kvp => GetAllPaths(kvp.Value))
-                .Select(p => SumPath(p, graph))
+                .Select(p => SumPath(p, input))
                 .Min();
-        }
 
         [Solver(2)]
-        public static long Solve2(IEnumerable<ChallengeType> input)
-        {
-            var graph = input.First();
-            return graph
+        public static long Solve2(ChallengeType input) =>
+            input
                 .SelectMany(kvp => GetAllPaths(kvp.Value))
-                .Select(p => SumPath(p, graph))
+                .Select(p => SumPath(p, input))
                 .Max();
-        }
     }
 }
