@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace AOC
@@ -17,6 +16,8 @@ namespace AOC
     [AdventOfCode(2015, 14)]
     public static class Day14_2015
     {
+        public static int RaceTime { get => 2503; }
+
         public static Reindeer ToData(Match m) =>
             new Reindeer(m.Get(1), m.Get(2).AsInt(), m.Get(3).AsInt(), m.Get(4).AsInt());
 
@@ -45,37 +46,34 @@ namespace AOC
             }
         }
 
-        [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> input)
+        public static long RunRace(IEnumerable<ChallengeType> input, Action<State[], Reindeer[]> postUpdate = null)
         {
             var reindeer = input.ToArray();
             var states = reindeer.Select(r => new State(0, r.FlightTime, 0, true)).ToArray();
 
-            for (int i = 0; i < 2503; ++i)
+            for (int i = 0; i < RaceTime; ++i)
             {
                 for (int s = 0; s < states.Length; ++s)
                 {
                     states[s] = Tick(states[s], reindeer[s]);
                 }
+
+                postUpdate?.Invoke(states, reindeer);
             }
 
             return states.Max(s => s.Distance);
         }
 
+        [Solver(1)]
+        public static long Solve1(IEnumerable<ChallengeType> input) => RunRace(input);
+
         [Solver(2)]
         public static long Solve2(IEnumerable<ChallengeType> input)
         {
-            var reindeer = input.ToArray();
-            var states = reindeer.Select(r => new State(0, r.FlightTime, 0, true)).ToArray();
-            var points = reindeer.Select(_ => 0).ToArray();
+            var points = input.Select(_ => 0).ToArray();
 
-            for (int i = 0; i < 2503; ++i)
+            RunRace(input, (states, reindeer) =>
             {
-                for (int s = 0; s < states.Length; ++s)
-                {
-                    states[s] = Tick(states[s], reindeer[s]);
-                }
-
                 int furthest = states.Max(s => s.Distance);
 
                 for (int s = 0; s < states.Length; ++s)
@@ -85,7 +83,7 @@ namespace AOC
                         ++points[s];
                     }
                 }
-            }
+            });
 
             return points.Max();
         }
