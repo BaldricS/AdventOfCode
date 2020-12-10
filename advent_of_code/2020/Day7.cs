@@ -43,7 +43,7 @@ namespace AOC
         }
 
         [MapInput]
-        public static IEnumerable<ChallengeType> Map(string[] lines)
+        public static ChallengeType Map(string[] lines)
         {
             var bags = new ChallengeType();
 
@@ -52,11 +52,11 @@ namespace AOC
                 GetBag(line, bags);
             }
 
-            return new[] { bags };
+            return bags;
         }
 
         [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> input)
+        public static long Solve1(ChallengeType input)
         {
             var visited = new HashSet<string>();
 
@@ -74,7 +74,7 @@ namespace AOC
                 }
             }
 
-            MarkChildren(input.First()["shiny gold"]);
+            MarkChildren(input["shiny gold"]);
             return visited.Count;
         }
 
@@ -82,8 +82,8 @@ namespace AOC
             bag.Contains.Sum(b => b.Item1 * (1 + CountBags(b.Item2)));
 
         [Solver(2)]
-        public static long Solve2(IEnumerable<ChallengeType> input) =>
-            CountBags(input.First()["shiny gold"]);
+        public static long Solve2(ChallengeType input) =>
+            CountBags(input["shiny gold"]);
         
     }
 }
