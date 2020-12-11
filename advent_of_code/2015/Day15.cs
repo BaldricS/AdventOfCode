@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace AOC
@@ -34,40 +32,15 @@ namespace AOC
                 .Select(FromMatch)
                 .ToArray();
 
-        public static long ScoreRecipe(int[] quad, int[][] ingredient)
-        {
-            long score = 1;
+        public static int Clamp(int i) => i < 0 ? 0 : i;
 
-            for (int i = 0; i < 4; ++i)
-            {
-                long temp = 0;
-                for (int q = 0; q < quad.Length; ++q)
-                {
-                    temp += quad[q] * ingredient[q][i];
-                }
+        public static long ScoreRecipe(int[] quad, int[][] ingredient) =>
+            ingredient
+                .Select((_, i) => quad.Select((v, q) => v * ingredient[q][i]).Sum())
+                .Aggregate((a, b) => Clamp(a) * Clamp(b));
 
-                if (temp <= 0)
-                {
-                    return 0;
-                }
-
-                score *= temp;
-            }
-
-            return score;
-        }
-
-        public static long CalculateCalories(int[] q, int[][] ingredient)
-        {
-            int cals = 0;
-
-            for (int i = 0; i < ingredient.Length; ++i)
-            {
-                cals += ingredient[i].Last() * q[i];
-            }
-
-            return cals;
-        }
+        public static long CalculateCalories(int[] q, int[][] ingredient) =>
+            ingredient.Select((ing, ind) => ing.Last() * q[ind]).Sum();
 
         [Solver(1)]
         public static long Solve1(int[][] ingredients) =>
