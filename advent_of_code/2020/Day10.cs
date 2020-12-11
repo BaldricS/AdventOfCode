@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace AOC
 {
@@ -10,22 +7,18 @@ namespace AOC
     public static class Day10_2020
     {
         [MapInput]
-        public static IEnumerable<int> Map(string[] lines) => lines.Select(int.Parse);
-        
-
-        [Solver(1)]
-        public static long Solve1(IEnumerable<int> input)
+        public static List<int> Map(string[] lines)
         {
-            var jolts = input.ToSortedList().Prepend(0);
-            jolts = jolts.Append(jolts.Last() + 3);
+            var items = lines.Select(int.Parse);
 
-            var diffOf1 = jolts.Pair().Where(j => j.Second - j.First == 1).Count();
-            var diffOf2 = jolts.Pair().Where(j => j.Second - j.First == 3).Count();
-
-            return diffOf1 * diffOf2;
+            return items.Append(0).Append(items.Max() + 3).ToSortedList();
         }
 
 
+        [Solver(1)]
+        public static long Solve1(List<int> jolts) =>
+            jolts.Pair().Where(p => p.Second - p.First == 1).Count() *
+            jolts.Pair().Where(p => p.Second - p.First == 3).Count();
 
         public static long PathsToEnd(List<int> jolts, int prev, int curr)
         {
@@ -43,20 +36,15 @@ namespace AOC
         }
 
         [Solver(2)]
-        public static long Solve2(IEnumerable<int> input)
+        public static long Solve2(List<int> jolts)
         {
-            List<int> sortedList = input.Append(0).ToSortedList();
-            sortedList = sortedList.Append(sortedList.Last() + 3).ToList();
-
             var sublists = new List<List<int>> { new List<int>() };
 
-            for (int i = 0; i < sortedList.Count - 1; ++i)
+            foreach (var pairs in jolts.Pair())
             {
-                var curr = sortedList[i];
-                var next = sortedList[i + 1];
+                sublists.Last().Add(pairs.First);
 
-                sublists.Last().Add(curr);
-                if (next - curr == 3)
+                if (pairs.Second - pairs.First == 3)
                 {
                     sublists.Add(new List<int>());
                 }
