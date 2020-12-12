@@ -19,91 +19,61 @@ namespace AOC
         public static IEnumerable<ChallengeType> Map(string[] lines) =>
             lines.Select(l => Regex.Match(l, @"(\w)(\d+)")).Select(ToData);
 
-        [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> input)
+        private static Pair Update(Pair pos, Pair dir, int amount) =>
+            pos with { X = pos.X + dir.X * amount, Y = pos.Y + dir.Y * amount };
+
+        public static long DriveTheBoat(IEnumerable<ChallengeType> input, bool isMobileWaypoint)
         {
             var pos = new Pair(0, 0);
-            var directions = new[] { new Pair(1, 0), new Pair(0, -1), new Pair(-1, 0), new Pair(0, 1) };
-
-            var facing = 0;
+            var wpPos = new Pair(1, 0);
 
             foreach (var action in input)
             {
-                var move = action.Action switch
+                var dir = action.Action switch
                 {
-                    'E' => 0,
-                    'S' => 1,
-                    'W' => 2,
-                    'N' => 3,
-                    'F' => facing,
-                    _ => -1
+                    'E' => new Pair(1, 0),
+                    'S' => new Pair(0, -1),
+                    'W' => new Pair(-1, 0),
+                    'N' => new Pair(0, 1),
+                    'F' => wpPos,
+                    _ => null
                 };
 
-                if (move > -1)
+                if (dir != null)
                 {
-                    var dir = directions[move];
-                    pos = pos with { X = pos.X + dir.X * action.Amount, Y = pos.Y + dir.Y * action.Amount };
-                }
-                else
-                {
-                    var rot = action.Action switch {
-                        'R' => action.Amount,
-                        'L' => 360 - action.Amount,
-                        _ => 0
-                    };
-
-                    facing = (facing + rot / 90) % 4;
-                }
-            }
-
-            return Math.Abs(pos.X) + Math.Abs(pos.Y);
-        }
-
-        [Solver(2)]
-        public static long Solve2(IEnumerable<ChallengeType> input)
-        {
-            var pos = new Pair(0, 0);
-            var wpPos = new Pair(10, 1);
-            var directions = new[] { new Pair(1, 0), new Pair(0, -1), new Pair(-1, 0), new Pair(0, 1) };
-
-            foreach (var action in input)
-            {
-                if (action.Action == 'F')
-                {
-                    pos = pos with { X = pos.X + wpPos.X * action.Amount, Y = pos.Y + wpPos.Y * action.Amount };
-                    continue;
-                }
-
-                var move = action.Action switch
-                {
-                    'E' => 0,
-                    'S' => 1,
-                    'W' => 2,
-                    'N' => 3,
-                    _ => -1
-                };
-
-                if (move > -1)
-                {
-                    var dir = directions[move];
-                    wpPos = wpPos with { X = wpPos.X + dir.X * action.Amount, Y = wpPos.Y + dir.Y * action.Amount };
+                    if (isMobileWaypoint && action.Action != 'F')
+                    {
+                        wpPos = Update(wpPos, dir, action.Amount);
+                    }
+                    else
+                    {
+                        pos = Update(pos, dir, action.Amount);
+                    }
                 }
                 else
                 {
                     var rot = (Math.PI / 180.0) * action.Action switch {
-                        'R' => action.Amount,
-                        'L' => 360 - action.Amount,
+                        'R' => 360 - action.Amount,
+                        'L' => action.Amount,
                         _ => 0
                     };
 
                     var xRot = (int)Math.Cos(rot);
                     var yRot = (int)Math.Sin(rot);
 
-                    wpPos = wpPos with { X = wpPos.X * xRot + wpPos.Y * yRot, Y = wpPos.Y * xRot - wpPos.X * yRot };
+                    wpPos = wpPos with { X = wpPos.X * xRot - wpPos.Y * yRot, Y = wpPos.Y * xRot + wpPos.X * yRot };
                 }
             }
 
             return Math.Abs(pos.X) + Math.Abs(pos.Y);
         }
+
+        [Solver(1)]
+        public static long Solve1(IEnumerable<ChallengeType> input) =>
+            DriveTheBoat(input, false);
+
+        [Solver(2)]
+        public static long Solve2(IEnumerable<ChallengeType> input) =>
+            DriveTheBoat(input.Prepend(new ShipAction('E', 9)).Prepend(new ShipAction('N', 1)), true);
     }
 }
