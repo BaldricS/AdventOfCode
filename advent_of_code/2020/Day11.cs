@@ -27,14 +27,6 @@ namespace AOC
 
         public static int CountVisibleNeighbors(int r, int c, List<string> grid)
         {
-            static IEnumerable<int> Repeat(int n)
-            {
-                while (true)
-                {
-                    yield return n;
-                }
-            }
-
             int CountSeat(IEnumerable<int> rows, IEnumerable<int> cols) =>
                 rows
                     .Zip(cols)
@@ -50,20 +42,21 @@ namespace AOC
                 }
             }
 
-            int occupied = 0;
+            var row = Enumerable.Repeat(r, grid.Count).ToArray();
+            var col = Enumerable.Repeat(c, grid[r].Length).ToArray();
+            var botCol = Range(0, c).Reverse().ToArray();
+            var topCol = Range(c + 1, grid[r].Length).ToArray();
+            var botRow = Range(0, r).Reverse().ToArray();
+            var topRow = Range(r + 1, grid.Count).ToArray();
 
-            occupied += CountSeat(Repeat(r), Range(0, c).Reverse());
-            occupied += CountSeat(Repeat(r), Range(c + 1, grid[r].Length));
-
-            occupied += CountSeat(Range(0, r).Reverse(), Repeat(c));
-            occupied += CountSeat(Range(r + 1, grid.Count), Repeat(c));
-
-            occupied += CountSeat(Range(0, r).Reverse(), Range(0, c).Reverse());
-            occupied += CountSeat(Range(r + 1, grid.Count), Range(0, c).Reverse());
-            occupied += CountSeat(Range(0, r).Reverse(), Range(c + 1, grid[r].Length));
-            occupied += CountSeat(Range(r + 1, grid.Count), Range(c + 1, grid[r].Length));
-
-            return occupied;
+            return CountSeat(row, botCol)
+                + CountSeat(row, topCol)
+                + CountSeat(botRow, col)
+                + CountSeat(topRow, col)
+                + CountSeat(botRow, botCol)
+                + CountSeat(topRow, botCol)
+                + CountSeat(botRow, topCol)
+                + CountSeat(topRow, topCol);
         }
 
         public static int NeighborSeats(int r, int c, List<string> grid) =>
