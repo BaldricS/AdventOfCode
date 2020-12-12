@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace AOC
 {
@@ -29,110 +27,41 @@ namespace AOC
 
         public static int CountVisibleNeighbors(int r, int c, List<string> grid)
         {
+            static IEnumerable<int> Repeat(int n)
+            {
+                while (true)
+                {
+                    yield return n;
+                }
+            }
+
+            int CountSeat(IEnumerable<int> rows, IEnumerable<int> cols) =>
+                rows
+                    .Zip(cols)
+                    .Select(pr => grid[pr.First][pr.Second])
+                    .FirstOrDefault(c => c == 'L' || c == '#')
+                     == '#' ? 1 : 0;
+
+            static IEnumerable<int> Range(int start, int end)
+            {
+                for (int i = start; i < end; ++i)
+                {
+                    yield return i;
+                }
+            }
+
             int occupied = 0;
-            for (int i = c - 1; i >= 0; --i)
-            {
-                if (grid[r][i] == 'L')
-                {
-                    break;
-                }
-                if (grid[r][i] == '#')
-                {
-                    ++occupied;
-                    break;
-                }
-            }
 
-            for (int i = c + 1; i < grid[r].Length; ++i)
-            {
-                if (grid[r][i] == 'L')
-                {
-                    break;
-                }
-                if (grid[r][i] == '#')
-                {
-                    ++occupied;
-                    break;
-                }
-            }
+            occupied += CountSeat(Repeat(r), Range(0, c).Reverse());
+            occupied += CountSeat(Repeat(r), Range(c + 1, grid[r].Length));
 
-            for (int i = r - 1; i >= 0; --i)
-            {
-                if (grid[i][c] == 'L')
-                {
-                    break;
-                }
-                if (grid[i][c] == '#')
-                {
-                    ++occupied;
-                    break;
-                }
-            }
+            occupied += CountSeat(Range(0, r).Reverse(), Repeat(c));
+            occupied += CountSeat(Range(r + 1, grid.Count), Repeat(c));
 
-            for (int i = r + 1; i < grid.Count; ++i)
-            {
-                if (grid[i][c] == 'L')
-                {
-                    break;
-                }
-                if (grid[i][c] == '#')
-                {
-                    ++occupied;
-                    break;
-                }
-            }
-
-            for (int i = r - 1, j = c - 1; i >= 0 && j >= 0; --i, --j)
-            {
-                if (grid[i][j] == 'L')
-                {
-                    break;
-                }
-                if (grid[i][j] == '#')
-                {
-                    ++occupied;
-                    break;
-                }
-            }
-
-            for (int i = r + 1, j = c + 1; i < grid.Count && j < grid[r].Length; ++i, ++j)
-            {
-                if (grid[i][j] == 'L')
-                {
-                    break;
-                }
-                if (grid[i][j] == '#')
-                {
-                    ++occupied;
-                    break;
-                }
-            }
-
-            for (int i = r - 1, j = c + 1; i >= 0 && j < grid[r].Length; --i, ++j)
-            {
-                if (grid[i][j] == 'L')
-                {
-                    break;
-                }
-                if (grid[i][j] == '#')
-                {
-                    ++occupied;
-                    break;
-                }
-            }
-
-            for (int i = r + 1, j = c - 1; i < grid.Count && j >= 0 ; ++i, --j)
-            {
-                if (grid[i][j] == 'L')
-                {
-                    break;
-                }
-                if (grid[i][j] == '#')
-                {
-                    ++occupied;
-                    break;
-                }
-            }
+            occupied += CountSeat(Range(0, r).Reverse(), Range(0, c).Reverse());
+            occupied += CountSeat(Range(r + 1, grid.Count), Range(0, c).Reverse());
+            occupied += CountSeat(Range(0, r).Reverse(), Range(c + 1, grid[r].Length));
+            occupied += CountSeat(Range(r + 1, grid.Count), Range(c + 1, grid[r].Length));
 
             return occupied;
         }
@@ -142,8 +71,7 @@ namespace AOC
                 .Where(pr => pr.X >= 0 && pr.X < grid.Count && pr.Y >= 0 && pr.Y < grid[0].Length)
                 .Count(pr => grid[pr.X][pr.Y] == '#');
 
-
-        public static char NextMove(int r, int c, List<string> grid) =>
+        public static char ImpatientNeighbor(int r, int c, List<string> grid) =>
             grid[r][c] switch
             {
                 'L' => NeighborSeats(r, c, grid) == 0 ? '#' : 'L',
@@ -151,7 +79,7 @@ namespace AOC
                 _ => '.'
             };
 
-        public static char NextMove2(int r, int c, List<string> grid) =>
+        public static char PatientNeighbor(int r, int c, List<string> grid) =>
             grid[r][c] switch
             {
                 'L' => CountVisibleNeighbors(r, c, grid) == 0 ? '#' : 'L',
@@ -162,51 +90,33 @@ namespace AOC
         public static bool AreSameGrid(List<string> one, List<string> two) =>
             one.Zip(two).All(rows => rows.First == rows.Second);
 
-        public static void PrintGrid(List<string> grid)
+        public static List<string> Settle(List<string> grid, Func<int, int, List<string>, char> move)
         {
-            foreach (var row in grid)
+            while (true)
             {
-                Console.WriteLine(row);
+                var nextGrid = grid
+                    .Select((row, r) => string.Join("", row.Select((_, c) => move(r, c, grid))))
+                    .ToList();
+
+                if (AreSameGrid(grid, nextGrid))
+                {
+                    return nextGrid;
+                }
+
+                grid = nextGrid;
             }
-            Console.WriteLine();
         }
+
+        public static int CountOccupied(this List<string> grid) => grid.Sum(row => row.Count(c => c == '#'));
 
         [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> input)
-        {
-            var grid = input.ToList();
-            while (true)
-            {
-                var nextGrid = grid
-                    .Select((row, r) => string.Join("", row.Select((_, c) => NextMove(r, c, grid))))
-                    .ToList();
-
-                if (AreSameGrid(grid, nextGrid))
-                {
-                    return nextGrid.Sum(row => row.Count(c => c == '#'));
-                }
-
-                grid = nextGrid;
-            }
-        }
+        public static long Solve1(IEnumerable<ChallengeType> input) =>
+            Settle(input.ToList(), ImpatientNeighbor)
+            .CountOccupied();
 
         [Solver(2)]
-        public static long Solve2(IEnumerable<ChallengeType> input)
-        {
-            var grid = input.ToList();
-            while (true)
-            {
-                var nextGrid = grid
-                    .Select((row, r) => string.Join("", row.Select((_, c) => NextMove2(r, c, grid))))
-                    .ToList();
-
-                if (AreSameGrid(grid, nextGrid))
-                {
-                    return nextGrid.Sum(row => row.Count(c => c == '#'));
-                }
-
-                grid = nextGrid;
-            }
-        }
+        public static long Solve2(IEnumerable<ChallengeType> input) =>
+            Settle(input.ToList(), PatientNeighbor)
+            .CountOccupied();
     }
 }
