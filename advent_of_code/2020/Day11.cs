@@ -27,12 +27,23 @@ namespace AOC
 
         public static int CountVisibleNeighbors(int r, int c, List<string> grid)
         {
-            int CountSeat(IEnumerable<int> rows, IEnumerable<int> cols) =>
-                rows
-                    .Zip(cols)
-                    .Select(pr => grid[pr.First][pr.Second])
-                    .FirstOrDefault(c => c == 'L' || c == '#')
-                     == '#' ? 1 : 0;
+            int CountSeat(int[] rows, int[] cols)
+            {
+                for (int r = 0, c = 0; r < rows.Length && c < cols.Length; ++r, ++c)
+                {
+                    char ch = grid[rows[r]][cols[c]];
+                    if (ch == 'L')
+                    {
+                        return 0;
+                    }
+                    else if (ch == '#')
+                    {
+                        return 1;
+                    }
+                }
+
+                return 0;
+            }
 
             static IEnumerable<int> Range(int start, int end)
             {
