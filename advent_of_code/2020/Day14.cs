@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AOC
@@ -58,6 +57,13 @@ namespace AOC
             return (zeroMask, oneMask);
         }
 
+        public static string ReplaceAt(string s, int i, char c)
+        {
+            var chars = s.ToCharArray();
+            chars[i] = c;
+            return new string(chars);
+        }
+
         public static IEnumerable<string> GetMasks(string mask, int index = 0)
         {
             if (index == mask.Length)
@@ -66,31 +72,18 @@ namespace AOC
             }
             else
             {
-                char c = mask[index];
-
-                if (c == '1' || c == 'X')
+                var replacements = mask[index] switch
                 {
-                    foreach (var m in GetMasks($"{mask[..index]}1{mask[(index + 1)..]}", index + 1))
-                    {
-                        yield return m;
-                    }
-                }
+                    '1' => new[] { '1' },
+                    '0' => new[] { 'X' },
+                    _ => new[] { '1', '0' }
+                };
 
-                if (c == '0')
+                var masks = replacements.SelectMany(r => GetMasks(ReplaceAt(mask, index, r), index + 1));
+                foreach (var result in masks)
                 {
-                    foreach (var m in GetMasks($"{mask[..index]}X{mask[(index+1)..]}", index + 1))
-                    {
-                        yield return m;
-                    }
+                    yield return result;
                 }
-                else if (c == 'X')
-                {
-                    foreach (var m in GetMasks($"{mask[..index]}0{mask[(index+1)..]}", index + 1))
-                    {
-                        yield return m;
-                    }
-                }
-
             }
         }
 
