@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace AOC
 {
     [AdventOfCode(2015, 15)]
-    public static class Day15_2020
+    public static class Day15_2015
     {
         public static IEnumerable<int[]> GenQuads(int threshhold)
         {
