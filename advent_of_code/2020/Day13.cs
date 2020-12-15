@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace AOC
 {
@@ -24,7 +22,6 @@ namespace AOC
                 bs.Slot,
                 long.Parse(bs.Bus)
             ));
-
 
             return (timeToWait, busTimes, allBusses.Count());
         }
