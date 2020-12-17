@@ -12,7 +12,8 @@ namespace AOC
     {
         [MapInput]
         public static ChallengeType Map(string[] lines) =>
-            lines.SelectMany((l, x) => l.Select((c, y) => c switch {
+            lines.SelectMany((l, x) => l.Select((c, y) => c switch
+            {
                 '#' => new Cube(x, y, 0),
                 _ => null
             }))
@@ -21,7 +22,7 @@ namespace AOC
 
         public static IEnumerable<Cube> Neighbors(Cube c)
         {
-            for (int x = -1; x <=1; ++x)
+            for (int x = -1; x <= 1; ++x)
             {
                 for (int y = -1; y <= 1; ++y)
                 {
@@ -116,7 +117,7 @@ namespace AOC
 
         public static IEnumerable<Quad> Neighbors(Quad c)
         {
-            for (int x = -1; x <=1; ++x)
+            for (int x = -1; x <= 1; ++x)
             {
                 for (int y = -1; y <= 1; ++y)
                 {
@@ -124,13 +125,12 @@ namespace AOC
                     {
                         for (int w = -1; w <= 1; ++w)
                         {
-                        if (x == 0 && y == 0 && z == 0 && w == 0)
-                        {
-                            continue;
-                        }
+                            if (x == 0 && y == 0 && z == 0 && w == 0)
+                            {
+                                continue;
+                            }
 
-                        yield return c with { X = c.X + x, Y = c.Y + y, Z = c.Z + z, W = c.W + w };
-
+                            yield return c with { X = c.X + x, Y = c.Y + y, Z = c.Z + z, W = c.W + w };
                         }
                     }
                 }
