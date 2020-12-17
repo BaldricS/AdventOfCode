@@ -6,25 +6,25 @@ using System.Text.RegularExpressions;
 
 namespace AOC
 {
-    using ChallengeType = String;
+    using ChallengeType = IEnumerable<string>;
 
     [AdventOfCode(2020, 1)]
     public static class Template
     {
 		[MapInput]
-        public static IEnumerable<ChallengeType> Map(string[] lines)
+        public static ChallengeType Map(string[] lines)
         {
             return lines;
         }
 
         [Solver(1)]
-        public static long Solve1(IEnumerable<ChallengeType> input)
+        public static long Solve1(ChallengeType input)
         {
             return 1;
         }
 
         [Solver(2)]
-        public static long Solve2(IEnumerable<ChallengeType> input)
+        public static long Solve2(ChallengeType input)
         {
             return 1;
         }
