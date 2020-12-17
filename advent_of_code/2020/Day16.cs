@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace AOC
@@ -68,20 +67,8 @@ namespace AOC
         public static bool TicketFieldInRange(int n, Field field) =>
             InRange(n, field.First) || InRange(n, field.Second);
 
-        public static List<int> GetInvalidFields(int[] ticket, Field[] fields)
-        {
-            List<int> invalid = new List<int>();
-
-            foreach (var number in ticket)
-            {
-                if (!fields.Any(f => TicketFieldInRange(number, f)))
-                {
-                    invalid.Add(number);
-                }
-            }
-
-            return invalid;
-        }
+        public static List<int> GetInvalidFields(int[] ticket, Field[] fields) =>
+            ticket.Where(n => !fields.Any(f => TicketFieldInRange(n, f))).ToList();
 
         public static HashSet<Field> GetMatchingFields(int n, Field[] fields) =>
             fields.Where(f => TicketFieldInRange(n, f)).ToHashSet();
@@ -101,42 +88,26 @@ namespace AOC
 
             foreach (var ticket in validTickets)
             {
-                for (int i = 0; i < ticket.Length; ++i)
-                {
-                    decodedFields[i].IntersectWith(GetMatchingFields(ticket[i], input.Fields));
-                }
+                decodedFields = decodedFields
+                    .Select((fs, i) => fs.Intersect(GetMatchingFields(ticket[i], input.Fields)).ToHashSet())
+                    .ToArray();
             }
 
             while (decodedFields.Any(f => f.Count > 1))
             {
-                foreach (var field in decodedFields)
+                foreach (var field in decodedFields.Where(f => f.Count == 1))
                 {
-                    if (field.Count == 1)
+                    foreach (var other in decodedFields.Where(f => f.Count > 1 && f != field))
                     {
-                        foreach (var other in decodedFields)
-                        {
-                            if (field == other)
-                            {
-                                continue;
-                            }
-
-                            other.Remove(field.First());
-                        }
+                        other.Remove(field.First());
                     }
                 }
             }
 
-            long prod = 1;
-            for (int i = 0; i < decodedFields.Length; ++i)
-            {
-                Console.WriteLine(decodedFields[i].Count);
-                if (decodedFields[i].First().Name.StartsWith("departure"))
-                {
-                    prod *= input.YourTicket[i];
-                }
-            }
-
-            return prod;
+            return decodedFields
+                .Select(f => f.First().Name)
+                .Select((f, i) => f.StartsWith("departure") ? input.YourTicket[i] : 1)
+                .Aggregate(1L, (acc, seed) => acc * seed);
         }
     }
 }
