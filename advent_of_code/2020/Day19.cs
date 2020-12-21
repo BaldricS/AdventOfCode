@@ -193,9 +193,22 @@ namespace AOC
 
             if (r.Second.Any())
             {
-                var second = r.Second.Select(i => existing[i]).Aggregate(ConcatNFAs);
+                var beforeSelfRef = r.Second.TakeWhile(i => i != r.Index).Select(i => existing[i]).ToList();
+                var afterSelfRef = r.Second.SkipWhile(i => i != r.Index).Skip(1).Select(i => existing[i]).ToList();
 
-                return OrNFAs(first, second);
+                // No self refs
+                if (beforeSelfRef.Count == r.Second.Count)
+                {
+                    return OrNFAs(first, beforeSelfRef.Aggregate(ConcatNFAs));
+                }
+
+                NFA merged = first;
+                for (int i = 0; i < 5; ++i)
+                {
+                    merged = OrNFAs(merged, beforeSelfRef.Append(merged).Concat(afterSelfRef).Aggregate(ConcatNFAs));
+                }
+
+                return merged;
             }
 
             return first;
@@ -208,6 +221,16 @@ namespace AOC
                 .ToDictionary(r => r.Index, r => MakeStartingDFA(r));
 
             var toExpand = input.Rules.Where(r => r.Value.Count == 0).ToList();
+
+            var rule8 = toExpand.Find(r => r.Index == 8);
+            rule8.Second.Add(42);
+            rule8.Second.Add(8);
+
+            var rule11 = toExpand.Find(r => r.Index == 11);
+            rule11.Second.Add(42);
+            rule11.Second.Add(11);
+            rule11.Second.Add(31);
+
             while (toExpand.Any())
             {
                 var toExpandNext = new List<Rule>();
@@ -241,10 +264,6 @@ namespace AOC
                 foreach (var c in line)
                 {
                     currentNodes = currentNodes.SelectMany(n => nfa.Transitions[n][c - 'a']).ToHashSet();
-                    if (currentNodes.Count == 0)
-                    {
-                        break;
-                    }
                 }
 
                 if (currentNodes.Any(n => nfa.Accepting[n]))
