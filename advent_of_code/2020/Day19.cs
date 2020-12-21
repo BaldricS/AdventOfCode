@@ -10,6 +10,8 @@ namespace AOC
 
     public record Rule(int Index, List<string> Value, List<int> First, List<int> Second, HashSet<int> DependsOn, bool IsSelfRef);
     public record Data(List<string> Lines, List<Rule> Rules);
+    public record Node(int Index, HashSet<Node> Connected, bool Accepting);
+    public record NFA(List<List<HashSet<int>>> Transitions, HashSet<int> StartNodes, List<bool> Accepting);
 
     [AdventOfCode(2020, 19)]
     public static class Day19_2020
@@ -22,7 +24,6 @@ namespace AOC
             var orSplit = parts[1].Split(" | ");
             var isLetter = orSplit[0][0] == '"';
 
-            var index = parts[0].AsInt();
             var first = isLetter ? new List<int>() : ToInts(orSplit[0]);
             var second = orSplit.Length == 2 ? ToInts(orSplit[1]) : new List<int>();
             var depends = first.Concat(second).ToHashSet();
@@ -37,7 +38,7 @@ namespace AOC
             );
         }
 
-		[MapInput]
+        [MapInput]
         public static ChallengeType Map(string[] lines)
         {
             var strings = lines.SkipWhile(l => l != "").Skip(1).ToList();
@@ -77,29 +78,6 @@ namespace AOC
         public static List<string> Expand(int index, List<int> items, Dictionary<int, Rule> expanded) =>
             Permute(items.Where(i => i != index).Select(i => expanded[i].Value).ToList());
 
-        public static List<string> Expand2(Rule r, List<int> items, Dictionary<int, Rule> expanded, int depth)
-        {
-            Console.WriteLine("Blerg");
-            var perms = Permute(items.Select(i =>
-            {
-                if (expanded.ContainsKey(i))
-                {
-                    return expanded[i].Value;
-                }
-
-                return new List<string> { "" };
-            })
-            .ToList());
-
-            if (!r.IsSelfRef || !items.Contains(r.Index) || depth == 1)
-            {
-                return perms;
-            }
-
-            expanded[r.Index] = r with { Value = perms };
-            return Expand2(expanded[r.Index], items, expanded, depth - 1);
-        }
-
         [Solver(1)]
         public static long Solve1(ChallengeType input)
         {
@@ -130,57 +108,152 @@ namespace AOC
             return input.Lines.Intersect(expanded[0].Value).Count();
         }
 
-        [Solver(2)]
-       public static long Solve2(ChallengeType input)
+        public static NFA MakeStartingDFA(Rule r)
         {
-            var expanded = input.Rules.Where(r => r.Value.Any()).ToDictionary(r => r.Index, r => r);
-            var toBeExpanded = input.Rules
-                .Where(r => r.Value.Count == 0)
-                .Select(r =>
-                {
-                    if (r.Index == 8)
-                    {
-                        return r with { Second = new List<int> { 42, 8 }, IsSelfRef = true };
-                    }
+            var val = r.Value.First();
+            var accepting = new List<bool> { false, true };
 
-                    if (r.Index == 11)
-                    {
-                        return r with { Second = new List<int> { 42, 11, 31 }, IsSelfRef = true };
-                    }
-
-                    return r;
-                })
-                .ToHashSet();
-
-            while (toBeExpanded.Any())
+            var transitions = new List<List<HashSet<int>>>
             {
-                var toExpand = new HashSet<Rule>();
-                foreach (var rule in toBeExpanded)
-                {
-                    if (!rule.DependsOn.All(d => expanded.ContainsKey(d)))
-                    {
-                        toExpand.Add(rule);
-                        continue;
-                    }
+                new List<HashSet<int>> { new HashSet<int>(), new HashSet<int>() },
+                new List<HashSet<int>> { new HashSet<int>(), new HashSet<int>() }
+            };
 
-                    var expandedValues = Expand(rule.Index, rule.First, expanded)
-                        .Concat(Expand2(rule, rule.Second, expanded, 2))
-                        .ToList();
+            var index = val[0] - 'a';
+            transitions[0][index].Add(1);
 
-                    if (expanded.ContainsKey(rule.Index))
-                    {
-                        continue;
-                    }
+            return new NFA(transitions, new HashSet<int> { 0 }, accepting);
+        }
 
-                    expanded[rule.Index] = rule with { Value = expandedValues };
-                }
+        public static NFA ConcatNFAs(NFA left, NFA right)
+        {
+            var transitionCopy = left.Transitions
+                .Select(letters => letters.Select(hs => hs.ToHashSet()).ToList())
+                .ToList();
 
-                toBeExpanded = toExpand;
+            if (right == null)
+            {
+                return new NFA(transitionCopy, left.StartNodes.ToHashSet(), left.Accepting.ToList());
             }
 
-            Console.WriteLine("Blarg");
+            int offset = transitionCopy.Count - 1;
 
-            return input.Lines.Intersect(expanded[0].Value).Count();
+            for (int e = 0; e < left.Accepting.Count; ++e)
+            {
+                if (!left.Accepting[e])
+                {
+                    continue;
+                }
+
+                foreach (var start in right.StartNodes)
+                {
+                    for (int l = 0; l < 2; ++l)
+                    {
+                        transitionCopy[e][l] = transitionCopy[e][l]
+                            .Union(right.Transitions[start][l].Select(i => i + offset).ToHashSet())
+                            .ToHashSet();
+                    }
+                }
+
+            }
+
+            var newStartNodes = left.StartNodes.ToHashSet();
+            var newAccepting = left.Accepting.Select(_ => false).Concat(right.Accepting.Skip(1)).ToList();
+            var updatedRightTransitions = right.Transitions
+                .Skip(1)
+                .Select(letters => letters.Select(hs => hs.Select(i => i + offset).ToHashSet()).ToList());
+
+            var finalTransitions = transitionCopy.Concat(updatedRightTransitions).ToList();
+
+            return new NFA(finalTransitions, newStartNodes, newAccepting);
+        }
+
+        public static NFA OrNFAs(NFA left, NFA right)
+        {
+            int offset = left.Transitions.Count;
+
+            var allTransitions = left.Transitions
+                .Select(letters => letters.Select(hs => hs.ToHashSet()).ToList())
+                .Concat(
+                    right.Transitions
+                        .Select(letters => letters.Select(hs => hs.Select(i => i + offset).ToHashSet()).ToList())
+                )
+                .ToList();
+
+            var allStarts = left.StartNodes.Union(right.StartNodes.Select(i => i + offset)).ToHashSet();
+
+            var allAccepting = left.Accepting.Concat(right.Accepting).ToList();
+
+            return new NFA(allTransitions, allStarts, allAccepting);
+        }
+
+        public static NFA RuleToNFA(Rule r, Dictionary<int, NFA> existing)
+        {
+            var first = r.First.Select(i => existing[i]).Aggregate(ConcatNFAs);
+
+            if (r.Second.Any())
+            {
+                var second = r.Second.Select(i => existing[i]).Aggregate(ConcatNFAs);
+
+                return OrNFAs(first, second);
+            }
+
+            return first;
+        }
+
+        [Solver(2)]
+        public static long Solve2(ChallengeType input)
+        {
+            var nfas = input.Rules.Where(r => r.Value.Any())
+                .ToDictionary(r => r.Index, r => MakeStartingDFA(r));
+
+            var toExpand = input.Rules.Where(r => r.Value.Count == 0).ToList();
+            while (toExpand.Any())
+            {
+                var toExpandNext = new List<Rule>();
+
+                foreach (var r in toExpand)
+                {
+                    if (!r.DependsOn.All(d => nfas.ContainsKey(d)))
+                    {
+                        toExpandNext.Add(r);
+                        continue;
+                    }
+
+                    nfas[r.Index] = RuleToNFA(r, nfas);
+                }
+
+                toExpand = toExpandNext;
+            }
+
+            var nfa = nfas[0];
+
+            int matching = 0;
+
+            foreach (var line in input.Lines)
+            {
+                if (line.Length >= nfa.Transitions.Count)
+                {
+                    continue;
+                }
+
+                var currentNodes = nfa.StartNodes;
+                foreach (var c in line)
+                {
+                    currentNodes = currentNodes.SelectMany(n => nfa.Transitions[n][c - 'a']).ToHashSet();
+                    if (currentNodes.Count == 0)
+                    {
+                        break;
+                    }
+                }
+
+                if (currentNodes.Any(n => nfa.Accepting[n]))
+                {
+                    ++matching;
+                }
+            }
+
+            return matching;
         }
     }
 }
