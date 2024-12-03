@@ -35,13 +35,5 @@ namespace AOC
 
             return sum;
         }
-
-        private static int[] Diffs(int[] input) {
-            return input.Zip(input.Skip(1)).Select(pr => pr.First - pr.Second).ToArray();
-        }
-
-        private static bool Check(int[] arrs) {
-            return arrs.All(n => n >= 1 &&  n <= 3) || arrs.All(n => n >= -3 && n <= -1);
-        }
     }
 }
