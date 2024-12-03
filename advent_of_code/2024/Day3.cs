@@ -23,9 +23,7 @@ namespace AOC
             var tokens = new Regex(@"mul\((\d+),(\d+)\)|do\(\)|don't\(\)");
             var matches = tokens.Matches(mem.First());
 
-            Console.WriteLine(matches.Count);
             foreach(Match token in matches) {
-                Console.WriteLine(token.Groups[0]);
                 if (token.Groups[0].Value == "do()") {
                     enabled = true;
                 } else if (token.Groups[0].Value == "don't()") {
