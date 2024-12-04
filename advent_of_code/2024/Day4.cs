@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
 namespace AOC
@@ -114,24 +115,34 @@ namespace AOC
         }
 
         [Solver(2)]
-        public static int Solve2(IEnumerable<string> mem)
+        public static int Solve2(string[] lines)
         {
-            bool enabled = true;
-            var sum = 0;
-            var tokens = new Regex(@"mul\((\d+),(\d+)\)|do\(\)|don't\(\)");
-            var matches = tokens.Matches(mem.First());
+            return FindXMas(lines);
+        }
 
-            foreach(Match token in matches) {
-                if (token.Groups[0].Value == "do()") {
-                    enabled = true;
-                } else if (token.Groups[0].Value == "don't()") {
-                    enabled = false;
-                } else if (token.Groups[0].Value.StartsWith("mul(") && enabled) {
-                    sum += int.Parse(token.Groups[1].Value) * int.Parse(token.Groups[2].Value);
+        private static int FindXMas(string[] lines)
+        {
+            int count = 0;
+            for (int r = 1; r < lines.Length - 1; ++r)
+            {
+                for (int c = 1; c < lines[r].Length - 1; ++c)
+                {
+                    if (lines[r][c] == 'A')
+                    {
+                        bool hasNegative = lines[r - 1][c - 1] == 'M' && lines[r + 1][c + 1] == 'S' ||
+                            lines[r - 1][c - 1] == 'S' && lines[r + 1][c + 1] == 'M';
+                        bool hasPositive = lines[r - 1][c + 1] == 'M' && lines[r + 1][c - 1] == 'S' ||
+                            lines[r - 1][c + 1] == 'S' && lines[r + 1][c - 1] == 'M';
+                    
+                        if (hasNegative && hasPositive)
+                        {
+                            ++count;
+                        }
+                    }
                 }
             }
 
-            return sum;
-        }
+            return count;
+        } 
     }
 }
