@@ -88,7 +88,6 @@ namespace AOC
 
         private static int CountPositiveDiagonal(string[] lines, string needle)
         {
-            Console.WriteLine($"Positive for {needle}");
             int count = 0;
             for (int r = 0; r <= lines.Length - needle.Length; ++r)
             {
