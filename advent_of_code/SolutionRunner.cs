@@ -20,7 +20,7 @@ namespace AOC
 
             sw.Reset();
             sw.Start();
-            var result = solution.Solver.Invoke(null, new[] { input });
+            var result = solution.Solver.Invoke(null, [input]);
             sw.Stop();
 
             return new RunResult(
@@ -53,7 +53,7 @@ namespace AOC
                 return firstLineOnly ? lines.First() : lines;
             }
 
-            return mapFunc.Invoke(null, new[] { lines });
+            return mapFunc.Invoke(null, [lines]);
         }
 
         private static string[] GetInput(int year, int day) =>
