@@ -30,7 +30,7 @@ namespace AOC
             foreach (var maybeLoc in allPlayerLocs)
             {
                 input[maybeLoc.Item1][maybeLoc.Item2] = '#';
-                bool hasLoop = DetectLoop(input, playerLoc, 500);
+                bool hasLoop = DetectLoop(input, playerLoc, 283);
                 input[maybeLoc.Item1][maybeLoc.Item2] = '.';
 
                 if (hasLoop)
@@ -60,7 +60,7 @@ namespace AOC
 
                 if (directions.Length > 1)
                 {
-                    playerLoc = directions.SkipLast(1).Last();
+                    playerLoc = directions[^2];
                 }
             }
 
@@ -75,8 +75,7 @@ namespace AOC
 
             while (true)
             {
-                (int, int) movementDir = dirs[dirIndex++ % 4];
-                (int, int)[] directions = CastRay(input, playerLoc, movementDir, '#').ToArray();
+                (int, int)[] directions = CastRay(input, playerLoc, dirs[dirIndex++ % 4], '#').ToArray();
                 foreach (var d in directions.SkipLast(1))
                 {
                     seenLocs.Add(d);
@@ -90,25 +89,26 @@ namespace AOC
 
                 if (directions.Length > 1)
                 {
-                    playerLoc = directions.SkipLast(1).Last();
+                    playerLoc = directions[^2];
                 }
             }
         }
 
         public static IEnumerable<(int, int)> CastRay(char[][] input, (int, int) current, (int, int) direction, char target)
         {
-            (int, int) next = (current.Item1 + direction.Item1, current.Item2 + direction.Item2);
-            while (!(next.Item1 < 0 || next.Item1 >= input.Length || next.Item2 < 0 || next.Item2 >= input[next.Item1].Length))
+            current.Item1 += direction.Item1;
+            current.Item2 += direction.Item2;
+            while (!(current.Item1 < 0 || current.Item1 >= input.Length || current.Item2 < 0 || current.Item2 >= input[current.Item1].Length))
             {
-                yield return next;
+                yield return current;
 
-                if (input[next.Item1][next.Item2] == target)
+                if (input[current.Item1][current.Item2] == target)
                 {
                     break;
                 }
 
-                current = next;
-                next = (current.Item1 + direction.Item1, current.Item2 + direction.Item2);
+                current.Item1 += direction.Item1;
+                current.Item2 += direction.Item2;
             }
         }
 
