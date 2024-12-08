@@ -28,6 +28,11 @@ namespace AOC
 
         public static bool Evaluate(long target, long a, int idx, long[] rest, Func<long, long, long>[] ops)
         {
+            if (a > target)
+            {
+                return false;
+            }
+
             if (idx == rest.Length)
             {
                 return target == a;
