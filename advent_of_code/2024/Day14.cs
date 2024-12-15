@@ -71,6 +71,24 @@ namespace AOC
             int wide = 101;
             int tall = 103;
             int totalMap = wide * tall;
+            for (int i = 0; i < 100; ++i)
+            {
+                for (int r = 0; r < input.Robots.Length; ++r)
+                {
+                    var robot = input.Robots[r];
+                    input.Robots[r].Position = Move(robot.Position, robot.Velocity, wide, tall);
+                }
+            }
+
+            return input.Robots.Select(r => Quadrant(r.Position, wide, tall)).Where(q => q != -1).GroupBy(q => q).Aggregate(1, (a, b) => a * b.Count());
+        }
+
+        [Solver(2)]
+        public static int Solve2(Input202414 input)
+        {
+            int wide = 101;
+            int tall = 103;
+            int totalMap = wide * tall;
             for (int i = 0; i < 100000; ++i)
             {
                 for (int r = 0; r < input.Robots.Length; ++r)
@@ -89,35 +107,31 @@ namespace AOC
 
                 if (positions > 15)
                 {
-                var hashed = input.Robots.Select(r => r.Position).ToHashSet();
+                    return i + 1;
+                    /*
+                    var hashed = input.Robots.Select(r => r.Position).ToHashSet();
 
-                for (int t = 0; t < tall; ++t)
-                {
-                    for (int w = 0; w < wide; ++w)
+                    for (int t = 0; t < tall; ++t)
                     {
-                        if (hashed.Contains((w, t)))
+                        for (int w = 0; w < wide; ++w)
                         {
-                            Console.Write("R");
+                            if (hashed.Contains((w, t)))
+                            {
+                                Console.Write("R");
+                            }
+                            else
+                            {
+                                Console.Write(".");
+                            }
                         }
-                        else
-                        {
-                            Console.Write(".");
-                        }
+                        Console.WriteLine();
                     }
-                    Console.WriteLine();
-                }
-                Console.WriteLine(i + 1);
+                */
                 }
 
             }
 
-            return input.Robots.Select(r => Quadrant(r.Position, wide, tall)).Where(q => q != -1).GroupBy(q => q).Aggregate(1, (a, b) => a * b.Count());
-        }
-
-        [Solver(2)]
-        public static long Solve2(Input202414 input)
-        {
-            return 1;
+            return -1;
         }
     }
 }
