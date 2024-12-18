@@ -158,8 +158,6 @@ namespace AOC
                 var seat = toTry[^1];
                 toTry.RemoveAt(toTry.Count - 1);
 
-                if (seats.Add(seat))
-                {
                     input.lines[seat.Item1][seat.Item2] = '#';
                     var (cost2, path2) = FindLowestScore(input.lines, (start.Item1, start.Item2, 'R'), goal);
                     input.lines[seat.Item1][seat.Item2] = '.';
@@ -168,7 +166,6 @@ namespace AOC
                     {
                         toTry.AddRange(path2.Select(p => (p.Item1, p.Item2)).Where(s => !seats.Contains(s)));
                     }
-                }
             }
 
             return seats.Count;
