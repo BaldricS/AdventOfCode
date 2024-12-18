@@ -32,7 +32,6 @@ namespace AOC
             {
                 mem[b[0]][b[1]] = '#';
             }
-            Print(mem);
 
             (int, int) start = (0, 0);
             (int, int) goal = (size - 1, size - 1);
