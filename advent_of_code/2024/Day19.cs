@@ -64,47 +64,40 @@ namespace AOC
         [Solver(1)]
         public static int Solve1(Input202419 input)
         {
-            return input.Patterns.Where(p => CanMakePattern(p, input.AvailableTowels, []) > 0).Count();
+            return input.Patterns.Where(p => CanMakePattern(p, 0, input.AvailableTowels, Enumerable.Repeat(-1L, 70).ToArray()) > 0).Count();
         }
 
-        public static IEnumerable<int> CanReachTowel(string pattern, Trie202419 root)
+        public static long CanMakePattern(string pattern, int idx, Trie202419 root, long[] seenPatterns)
         {
-            for (int i = 0; i < pattern.Length && root != null; ++i)
+            if (seenPatterns[idx] >= 0)
             {
-                root = root.Next[pattern[i] - 'a'];
-                if (root?.IsTowel ?? false)
-                {
-                    yield return i + 1;
-                }
-            }
-        }
-
-        public static long CanMakePattern(string pattern, Trie202419 node, Dictionary<string, long> seenPatterns)
-        {
-            if (seenPatterns.TryGetValue(pattern, out var val))
-            {
-                return val;
+                return seenPatterns[idx];
             }
 
-            if (pattern.Length == 0)
+            if (idx == pattern.Length)
             {
                 return 1;
             }
 
             long waysToMake = 0;
-            foreach (var i in CanReachTowel(pattern, node))
+            var node = root;
+            for (int i = idx; i < pattern.Length && node != null; ++i)
             {
-                string newPattern = pattern[i..];
-                waysToMake += CanMakePattern(newPattern, node, seenPatterns);
+                node = node.Next[pattern[i] - 'a'];
+                if (node?.IsTowel ?? false)
+                {
+                    waysToMake += CanMakePattern(pattern, i + 1, root, seenPatterns);
+                }
             }
 
-            return seenPatterns[pattern] = waysToMake;
+            seenPatterns[idx] = waysToMake;
+            return waysToMake;
         }
 
         [Solver(2)]
         public static long Solve2(Input202419 input)
         {
-            return input.Patterns.Select(p => CanMakePattern(p, input.AvailableTowels, [])).Sum();
+            return input.Patterns.Select(p => CanMakePattern(p, 0, input.AvailableTowels, Enumerable.Repeat(-1L, 70).ToArray())).Sum();
         }
     }
 }
